@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Created-By: Copyright 2013-2015, Juha Lindfors. All rights reserved.
+Name: beehive-discovery-client
+Specification-Title: Beehive Discovery Client
+Specification-Version: ${api.version}
+Specification-Vendor: Copyright 2013-2015, Juha Lindfors. All rights reserved.
+Implementation-Title: Beehive Discovery Client REST API
+Implementation-Version: ${release.version}
+Implementation-Vendor: Copyright 2013-2015, Juha Lindfors. All rights reserved.
+Main-Class: org.openremote.beehive.discovery.client.DeviceDiscoveryClient
