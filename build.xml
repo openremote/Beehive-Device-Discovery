@@ -225,6 +225,21 @@
         <exclude name = "LICENSE*"/>
       </fileset>
 
+      <fileset dir = "${lib.dir}/javassist-3.18.1">
+        <include name = "**/*.jar"/>
+        <exclude name = "LICENSE*"/>
+      </fileset>
+
+      <fileset dir = "${lib.dir}/hk2-2.2.0">
+        <include name = "**/*.jar"/>
+        <exclude name = "LICENSE*"/>
+      </fileset>
+
+      <fileset dir = "${lib.dir}/javax.inject-1.0">
+        <include name = "**/*.jar"/>
+        <exclude name = "LICENSE*"/>
+      </fileset>
+
       <fileset dir = "${lib.dir}/javax.ws.rs-2.0">
         <include name = "**/*.jar"/>
         <exclude name = "LICENSE*"/>
