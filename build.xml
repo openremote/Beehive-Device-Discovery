@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Copyright 2013-2015, Juha Lindfors. All rights reserved.
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as
+  published by the Free Software Foundation; either version 3 of the
+  License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful, but
+  WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  Affero General Public License for more details.
+
+  You should have received a copy of the GNU Affero General Public
+  License along with this program; if not, see
+  http://www.gnu.org/licenses/.
+
+-->
+
+<!--
+ |  AVAILABLE TARGETS:
+ |
+ |  This is a project specific build file. The project template is
+ |  imported at the beginning of the file which includes common task definitions
+ |  and default project targets:
+ |
+ |    - compile             to compile all Java sources
+ |    - unit-test           to execute all Java unit tests
+ |    - clean               removes all generated files
+ |
+ |
+ |  CLASSPATHS:
+ |
+ |  You  can  customize  classpaths  by  editing  the  'java.compile.classpath'  and
+ |  'java.test.compile.classpath' paths defined below. Note however that any libraries placed
+ |  under project /lib/libraryname-verson and /build/libraryname-version directories will be
+ |  automatically added to compiler and runtime execution classpaths. It is recommended that
+ |  you use the above-mentioned convention to add libraries unless there's a specific requirement
+ |  that doesn't allow you to do so. The project /lib/libraryname-version should be used for
+ |  libraries that are runtime dependencies to the project distributable and therefore required
+ |  for the project executable to run. The /build/libraryname-version can be used for libraries
+ |  that are *only* required at compile time but are *not* required at runtime when the project
+ |  executable is run.
+ |
+ |
+ |  EXTENSIONS:
+ |
+ |  The project template may be extended by adding targets to the
+ |  following extensions points:
+ |
+ |    -before-compile, -after-compile
+ |    -before-unit-test-compile, -after-unit-test-compile
+ |    -before-unit-test, -after-unit-test
+ |
+ |  To add individual project targets to default target dependency graphs, create an
+ |  extension target such as:
+ |
+ |    <target name = "verify-results" extensionOf = "-after-unit-test">
+ |
+ |
+ |  Following user defined properties may be set for pre-defined tasks. Add the property
+ |  definitions to this build file (or build.properties or local.properties file) according
+ |  to the convention:
+ |
+ |    - Properties with prefix 'unit.test.user' will be passed as system properties to
+ |      the unit test JVM
+ |
+ |
+ |  Author: Juha Lindfors
+ +-->
+
+<project name = "Beehive Device Discovery" default = "unit-test" basedir = ".">
+
+
+  <!--
+   | Imports the project template. Do not change.
+   +-->
+  <import file = "build/project/auto-updated/do-not-modify/project-template.xml" as = "project-template"/>
+
+
+  <!--
+   | Default description of this project. The description below is displayed when then project
+   | is executed with a -\-projecthelp (or -p) argument.
+   |
+   | EDIT to give a more precise description of the project, if necessary.
+   +-->
+  <description>
+  --------------------------------------------------------------------
+  Copyright 2013-2015, Juha Lindfors. All rights reserved.
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as
+  published by the Free Software Foundation; either version 3 of the
+  License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful, but
+  WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  Affero General Public License for more details.
+
+  You should have received a copy of the GNU Affero General Public
+  License along with this program; if not, see
+  http://www.gnu.org/licenses/.
+  --------------------------------------------------------------------
+
+
+  Build file to create project ${project.name}.
+
+  Run:
+
+    > sh project.sh --help
+
+  for details.
+
+
+  </description>
+
+
+  <!-- ========================================================= -->
+  <!--  PATH DEFINITIONS.                                        -->
+  <!-- ========================================================= -->
+
+
+  <!--
+   | Add jars and classes that are required to compile the project here. Note that
+   | all archives found under /lib/library-version/*.jar and /build/lib/library-version/*.jar
+   | are automatically added to the compile classpath. It is recommended you use the above
+   | two locations and the naming convention to add libraries required for compilation.
+   | Libraries that are *only* required at compile phase should be under /build/lib hierarchy,
+   | library dependencies required to run the project binaries should be placed under the
+   | /lib hierarchy.
+   |
+   | If any additional locations are required to add libraries and classes to compiler's
+   | classpath, add them below.
+   +-->
+  <path id = "java.compile.classpath">
+
+  </path>
+
+  <!--
+   | Add jars and classes that are required to compile unit tests here. Note that
+   | all classes used to compile the project, including the 'java.compile.classpath' classes
+   | are automatically included. This means also all archives found under
+   | /lib/library-version/*.jar and /build/lib/library-version/*.jar are automatically included
+   | in the unit test compile classpath.
+   |
+   | If any additional locations are required to add libraries and classes to compiler's
+   | classpath, add them below.
+   +-->
+  <path id = "java.test.compile.classpath">
+
+  </path>
+
+</project>
+

@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Copyright 2013-2015, Juha Lindfors. All rights reserved.
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as
+  published by the Free Software Foundation; either version 3 of the
+  License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful, but
+  WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  Affero General Public License for more details.
+
+  You should have received a copy of the GNU Affero General Public
+  License along with this program; if not, see
+  http://www.gnu.org/licenses/.
+
+-->
+
+<!--
+ |  Script for handling the updates of the project template files. It will connect to a
+ |  build repository server and check if any of the project template file definitions
+ |  have changed.
+ |
+ |  Author: Juha Lindfors 
+ +-->
+<project name ="Project Template Update" basedir = "../../../.." default = "update">
+
+  <!--
+   | Load local properties overriding other properties for values that
+   | are not intended for general use / commit to version control.
+   +-->
+  <property file = "local.properties"/>
+
+  <!--
+   | Load persistent build properties to configure this build.
+   +-->
+  <property file = "build.properties"/>
+
+  <!--
+   | Load project specific default properties.
+   +-->
+  <property file = "${project.file.path}/project.properties"/>
+
+  <!--
+   | Load all the rest of default properties that have not been overridden by the above
+   +-->
+  <property file = "${project.file.path}/default.properties"/>
+
+
+  <!--
+   | Public helper macro for nested property expansion (from Ant FAQ)...
+   +-->
+  <macrodef name = "propertycopy">
+    <attribute name = "name"/>
+    <attribute name = "from"/>
+
+    <sequential>
+      <property name="@{name}" value="${@{from}}"/>
+    </sequential>
+
+  </macrodef>
+
+
+  <!--
+   | Initialize preconditions. At minimum the properties 'project.file.path',
+   | 'build.repository.uri' and 'project.name' must be available to proceed.
+   |
+   | First two are in general found in 'build.properties' file unless for
+   | some reason have been overridden in 'local.properties' file. The 'project.name'
+   | is in general found in 'project.properties' located at 'project.file.path'.
+   +-->
+  <target name="-init">
+
+    <fail unless = "project.file.path">
+      Property 'project.file.path' must be set.
+    </fail>
+
+    <fail unless = "build.repository.uri">
+      Property 'build.repository.uri' must be set in the build.properties file.
+    </fail>
+
+    <fail unless = "project.name">
+      Property 'project.name' must be set in the project.properties file.
+    </fail>
+
+  </target>
+
+
+  <!--
+   | UPDATE:
+   |
+   | Downloads project template files from build repository server.
+   +-->
+  <target name = "update" description = "Updates this project setup" if = "project.file.path">
+
+    <mkdir dir = "${java.src.dir}/org/openremote"/>
+    <mkdir dir = "${java.test.src.dir}/org/openremote"/>
+    <mkdir dir = "${build.lib.dir}"/>
+
+    <echo>
+    &gt;&gt; Updating project templates...
+    </echo>
+
+    <get dest = "${project.file.path}" usetimestamp = "true">
+
+      <url url = "${build.repository.uri}/project/${project.name}/default.properties"/>
+      <url url = "${build.repository.uri}/project/${project.name}/project.properties"/>
+      <url url = "${build.repository.uri}/project/${project.name}/project-update.xml"/>
+      <url url = "${build.repository.uri}/project/${project.name}/project-update-script.xml"/>
+      <url url = "${build.repository.uri}/project/${project.name}/project-template.xml"/>
+      <url url = "${build.repository.uri}/project/${project.name}/task-definitions.xml"/>
+      <url url = "${build.repository.uri}/project/${project.name}/checkstyle-config.xml"/>
+      
+    </get>
+
+    <get dest = "${basedir}" usetimestamp = "true">
+
+      <url url = "${build.repository.uri}/project/${project.name}/project.sh"/>
+
+    </get>
+
+    <!-- Execute the project-update-script.xml with its default target... -->
+
+    <ant dir = "${project.file.path}" antfile = "project-update-script.xml"/>
+
+    <delete file = "${project.file.path}/project-update-script.xml"/>
+
+
+    <echo>
+    &gt;&gt; Updating TestNG libraries...
+    </echo>
+
+    <mkdir dir = "${testng.path}"/>
+
+    <get dest = "${testng.path}" usetimestamp = "true" verbose = "true">
+
+      <url url = "${build.repository.uri}/project/${project.name}/build/lib/testng-6.8/testng-6.8.jar"/>
+      <url url = "${build.repository.uri}/project/${project.name}/build/lib/testng-6.8/LICENSE.txt"/>
+
+    </get>
+
+
+    <echo>
+    &gt;&gt; Updating Cobertura libraries...
+    </echo>
+
+    <mkdir dir = "${cobertura.path}"/>
+    <mkdir dir = "${cobertura.path}/lib"/>
+
+    <get dest = "${cobertura.path}" usetimestamp = "true" verbose = "true">
+
+      <url url = "${build.repository.uri}/project/${project.name}/build/lib/cobertura-2.0.3-orpatch-1/LICENSE.txt"/>
+      <url url = "${build.repository.uri}/project/${project.name}/build/lib/cobertura-2.0.3-orpatch-1/cobertura-2.0.3.jar"/>
+
+    </get>
+
+    <get dest = "${cobertura.path}/lib" usetimestamp = "true" verbose = "true">
+
+      <url url = "${build.repository.uri}/project/${project.name}/build/lib/cobertura-2.0.3-orpatch-1/lib/asm-4.1.jar"/>
+      <url url = "${build.repository.uri}/project/${project.name}/build/lib/cobertura-2.0.3-orpatch-1/lib/asm-analysis-4.1.jar"/>
+      <url url = "${build.repository.uri}/project/${project.name}/build/lib/cobertura-2.0.3-orpatch-1/lib/asm-commons-4.1.jar"/>
+      <url url = "${build.repository.uri}/project/${project.name}/build/lib/cobertura-2.0.3-orpatch-1/lib/asm-tree-4.1.jar"/>
+      <url url = "${build.repository.uri}/project/${project.name}/build/lib/cobertura-2.0.3-orpatch-1/lib/asm-util-4.1.jar"/>
+      <url url = "${build.repository.uri}/project/${project.name}/build/lib/cobertura-2.0.3-orpatch-1/lib/dom4j-1.6.1.jar"/>
+      <url url = "${build.repository.uri}/project/${project.name}/build/lib/cobertura-2.0.3-orpatch-1/lib/icu4j-2.6.1.jar"/>
+      <url url = "${build.repository.uri}/project/${project.name}/build/lib/cobertura-2.0.3-orpatch-1/lib/jaxen-1.1-beta-8.jar"/>
+      <url url = "${build.repository.uri}/project/${project.name}/build/lib/cobertura-2.0.3-orpatch-1/lib/jdom-1.0.jar"/>
+      <url url = "${build.repository.uri}/project/${project.name}/build/lib/cobertura-2.0.3-orpatch-1/lib/jetty-6.1.14.jar"/>
+      <url url = "${build.repository.uri}/project/${project.name}/build/lib/cobertura-2.0.3-orpatch-1/lib/jetty-util-6.1.14.jar"/>
+      <url url = "${build.repository.uri}/project/${project.name}/build/lib/cobertura-2.0.3-orpatch-1/lib/log4j-1.2.17.jar"/>
+      <url url = "${build.repository.uri}/project/${project.name}/build/lib/cobertura-2.0.3-orpatch-1/lib/oro-2.0.8.jar"/>
+      <url url = "${build.repository.uri}/project/${project.name}/build/lib/cobertura-2.0.3-orpatch-1/lib/servlet-api-2.5-6.1.14.jar"/>
+      <url url = "${build.repository.uri}/project/${project.name}/build/lib/cobertura-2.0.3-orpatch-1/lib/tagsoup-0.9.7.jar"/>
+      <url url = "${build.repository.uri}/project/${project.name}/build/lib/cobertura-2.0.3-orpatch-1/lib/xmlParserAPIs-2.6.2.jar"/>
+      <url url = "${build.repository.uri}/project/${project.name}/build/lib/cobertura-2.0.3-orpatch-1/lib/xom-1.0b3.jar"/>
+
+    </get>
+
+
+    <echo>
+    &gt;&gt; Updating Checkstyle libraries...
+    </echo>
+
+    <mkdir dir = "${checkstyle.path}"/>
+
+    <get dest = "${checkstyle.path}" usetimestamp = "true" verbose = "true">
+
+      <url url = "${build.repository.uri}/project/${project.name}/build/lib/checkstyle-5.7/checkstyle-5.7-all.jar"/>
+      <url url = "${build.repository.uri}/project/${project.name}/build/lib/checkstyle-5.7/LICENSE"/>
+      <url url = "${build.repository.uri}/project/${project.name}/build/lib/checkstyle-5.7/LICENSE.apache20"/>
+      <url url = "${build.repository.uri}/project/${project.name}/build/lib/checkstyle-5.7/RIGHTS.antlr"/>
+
+    </get>
+
+  </target>
+
+
+  <!--
+   | UPDATE-COMPLETE:
+   |
+   | Downloads Java runtime libraries required to cross-compile to older Java versions.
+   +-->
+  <target name = "update-complete"
+          description = "Updates this project with Java runtime libraries required by cross-compiler"
+          depends = "update">
+
+    <property name = "absolute.basedir" location = "${basedir}"/>
+    <property name = "absolute.java.runtime.path" location = "${java.runtime.path}"/>
+
+    <condition property = "path.within.project">
+      <contains string = "${absolute.java.runtime.path}" substring = "${absolute.basedir}"/>
+    </condition>
+
+    <propertycopy
+        name = "target.java.runtime.dir"
+        from = "java.${java.target.version}.runtime.directory"/>
+
+    <antcall target = "-check-java-runtime-path"/>
+    <antcall target = "-download-java-runtime"/>
+
+  </target>
+
+  <!--
+   | Checks if the -download-java-runtime target should proceed...
+   +-->
+  <target name = "-download-java-runtime-check">
+    <condition property="download.java.runtime.run">
+      <or>
+        <istrue value = "${path.within.project}"/>
+        <istrue value = "${download.java.runtime}"/>
+      </or>
+    </condition>
+  </target>
+
+  <!--
+   | Downloads the runtime libs if -download-java-runtime-check passes...
+   +-->
+  <target name = "-download-java-runtime" depends = "-download-java-runtime-check"
+          if = "download.java.runtime.run">
+
+    <mkdir dir = "${java.runtime.path}/${target.java.runtime.dir}"/>
+
+    <echo>
+    &gt;&gt; Downloading Java 1.6 runtime libraries...
+    </echo>
+
+    <get dest = "${java.runtime.path}/${target.java.runtime.dir}"
+         usetimestamp = "true"
+         verbose = "true">
+
+      <url url = "${build.repository.uri}/project/java/java-${java.target.version}/openjdk-6-jre-headless_6b27/copyright"/>
+      <url url = "${build.repository.uri}/project/java/java-${java.target.version}/openjdk-6-jre-headless_6b27/rt.jar"/>
+
+    </get>
+
+  </target>
+
+  <!--
+   | If Java runtime has been configured outside the project paths, make sure the user intends
+   | to replace them, so we don't accidentally override system installation files.
+   +-->
+  <target name = "-check-java-runtime-path" unless = "path.within.project">
+
+    <input addproperty = "ask.java.runtime.install"
+           validargs = "y,n"
+           defaultvalue = "n">
+      Java runtime has been configured to ${absolute.java.runtime.path}/${target.java.runtime.dir}.
+
+      Are you sure you want to download to this location [y/N] ?
+    </input>
+
+    <condition property = "download.java.runtime">
+      <equals arg1 = "${ask.java.runtime.install}" arg2 = "y"/>
+    </condition>
+
+    <antcall target = "-download-java-runtime"/>
+
+  </target>
+
+
+</project>

@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Copyright 2013-2015, Juha Lindfors. All rights reserved.
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as
+  published by the Free Software Foundation; either version 3 of the
+  License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful, but
+  WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  Affero General Public License for more details.
+
+  You should have received a copy of the GNU Affero General Public
+  License along with this program; if not, see
+  http://www.gnu.org/licenses/.
+
+-->
+
+<!--
+ |  This is the base project template for all projects. It provides default
+ |  build targets:
+ |
+ |    - compile             compiles all Java classes
+ |    - unit-test           executes all Java unit tests
+ |    - clean               removes all generated files
+ |
+ |
+ |  The main build file which imports this template may extend the functionality by adding
+ |  targets to the following extensions points:
+ |
+ |    -before-compile, -after-compile
+ |    -before-unit-test-compile, -after-unit-test-compile
+ |    -before-unit-test, -after-unit-test
+ |
+ |  Author: Juha Lindfors
+ +-->
+<project name = "Project Template" basedir = "."
+         xmlns:project-tasks = "namespace://build.repository.openremote.org/project/tasks">
+
+  <!--
+   | Load local properties overriding other properties for values that
+   | are not intended for general use / commit to version control.
+   +-->
+  <property file = "local.properties"/>
+
+  <!--
+   | Load persistent build properties to configure this build.
+   +-->
+  <property file = "build.properties"/>
+
+  <!--
+   | Resolve the directory path of an imported build file...
+   +-->
+  <dirname property = "import.basedir" file = "${ant.file.Project Template}"/>
+
+  <!--
+   | Load project specific default properties.
+   +-->
+  <property file = "${import.basedir}/project.properties"/>
+
+  <!--
+   | Load all the rest of default properties that have not been overridden by the above
+   +-->
+  <property file = "${import.basedir}/default.properties"/>
+
+
+  <!--
+   | Import customized tasks...
+   +-->
+  <import file = "${import.basedir}/task-definitions.xml" as = "project-template-tasks"/>
+
+
+  <!--
+   | COMPILE:
+   |
+   | Compiles all Java classes of this project. Public project target.
+   +-->
+  <target name = "compile" depends = "-before-compile, -check-cross-compile-runtime"
+          description = "Compiles all project Java classes.">
+
+    <echo>
+
+    -------------------------------------------------------------
+      Compiling ${project.name} Java classes...
+    -------------------------------------------------------------
+
+    </echo>
+
+    <!-- Make sure we have a target directory for our compiled classes... -->
+
+    <mkdir dir = "${classes.dir}"/>
+
+    <!-- And ensure lib and build/lib directories exists, even if not used,
+         to avoid some errors... -->
+
+    <mkdir dir = "${build.lib.dir}"/>
+    <mkdir dir = "${lib.dir}"/>
+
+    <antcall target = "-java-style-check"/>
+
+    <project-tasks:compile-java/>
+
+  </target>
+
+  <target name = "-java-style-check">
+
+    <project-tasks:java-style-check/>
+
+    <antcall target = "-report-java-style-check"/>
+
+  </target>
+
+  <target name = "-java-style-check-strict" depends = "-java-style-check" if = "checkstyle.fail">
+
+    <echo>
+
+    !! RELEASE FAILURE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+      Please fix the Java style convention errors before proceeding
+      with creating a release.
+
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    </echo>
+    <fail message = "Java style convention errors."/>
+
+  </target>
+
+  <target name = "-report-java-style-check" if = "checkstyle.fail">
+
+    <echo>
+
+    ** WARNING ******************************************************
+
+    Source code does not follow Java style conventions and will not
+    be releasable until corrected.
+
+    *****************************************************************
+
+    </echo>
+
+    <loadfile property = "checkstyle.report">
+      <file file = "${build.dir}/checkstyle-report.txt"/>
+    </loadfile>
+
+    <echo message = "${checkstyle.report}"/>
+
+  </target>
+
+  <target name = "-check-cross-compile-runtime">
+
+    <local name = "runtime.directory"/>
+    <project-tasks:propertycopy name = "runtime.directory"
+                             from = "java.${java.target.version}.runtime.directory"/>
+
+    <condition property = "java.${java.target.version}.runtime.available">
+      <or>
+        <contains string = "${java.version}" substring = "${java.target.version}"/>
+        <available file = "${java.runtime.path}/${runtime.directory}/rt.jar"/>
+      </or>
+    </condition>
+
+    <antcall target = "-warn-cross-compile"/>
+
+  </target>
+
+  <target name = "-warn-cross-compile" unless = "java.${java.target.version}.runtime.available">
+
+    <echo level = "warning">
+    WARNING:
+
+      Project has been configured to target Java version ${java.target.version}. You are
+      compiling with JDK version ${java.version}. A successful cross-compile to ${java.target.version}
+      requires JRE ${java.target.version} runtime libraries to be set in Java compiler's boot
+      classpath.
+
+      Install Java runtime libraries by executing 'sh project.sh update-complete' on the command
+      line. Alternatively, configure 'java.runtime.path' and 'java.${java.target.version}.runtime.directory'
+      properties in a 'local.properties' file (create a new file if one doesn't exist) to point
+      to an existing JDK ${java.target.version} or JRE ${java.target.version} installation that contains the
+      required runtime libraries.
+
+      Correct Java runtime libraries MUST be configured before this project can be released.
+    </echo>
+
+  </target>
+
+  <extension-point name = "-before-compile"/>
+  <extension-point name = "-after-compile" depends = "compile"/>
+
+
+  <!--
+   | Compiles all Java unit test classes of this project.
+   +-->
+  <target name = "-unit-test-compile"
+          depends = "compile, -after-compile, -before-unit-test-compile">
+
+    <echo>
+
+    -------------------------------------------------------------
+      Compiling ${project.name} Java unit tests...
+    -------------------------------------------------------------
+
+    </echo>
+
+    <mkdir dir="${test.classes.dir}"/>
+
+    <project-tasks:compile-java-unit-test/>
+
+  </target>
+
+  <extension-point name = "-before-unit-test-compile" depends = "compile"/>
+  <extension-point name = "-after-unit-test-compile" depends = "-unit-test-compile"/>
+
+  <!--
+   | UNIT-TEST:
+   |
+   | Executes all Java unit tests of this project. Public project target.
+   +-->
+  <target name = "unit-test"
+          depends = "-unit-test-compile, -after-unit-test-compile, -before-unit-test"
+          description = "Executes project Java unit tests">
+
+    <echo>
+
+    -------------------------------------------------------------
+      Executing ${project.name} Java unit tests
+      (with code coverage)...
+    -------------------------------------------------------------
+
+    </echo>
+
+    <!-- Load local and build properties into 'project.build' property namespace,
+         which are passed into the JVM executing the unit tests, making these property
+         values available to unit test code.
+    -->
+    <property file = "local.properties" prefix = "project.build."/>
+    <property file = "build.properties" prefix = "project.build."/>
+
+    <!-- Load project default properties into the 'project.build.' property namespace
+         as well.
+    -->
+    <property file = "${import.basedir}/default.properties" prefix = "project.build."/>
+
+    <project-tasks:run-java-unit-test/>
+
+    <makeurl file = "${unit.test.report.dir}" property = "unit.test.report.uri"/>
+    <makeurl file = "${build.test.coverage.dir}" property = "unit.test.coverage.uri"/>
+
+    <antcall target = "-print-unit-test-report-location"/>
+
+    <echo>
+
+    REPORT: Test coverage report available at:
+    ${unit.test.coverage.uri}index.html
+
+    </echo>
+
+  </target>
+
+  <target name = "-print-unit-test-report-location" if = "java.unit.test.failure">
+
+    <echo>
+
+    ** NOTE *********************************************************
+
+    Some unit tests failed. Please investigate the full report:
+    ${unit.test.report.uri}index.html
+
+    *****************************************************************
+
+    </echo>
+
+  </target>
+
+  <extension-point name = "-before-unit-test" depends = "-unit-test-compile"/>
+  <extension-point name = "-after-unit-test"  depends = "unit-test"/>
+
+
+  <!--
+   | RELEASE:
+   |
+   | Builds a full project release. Public project target.
+   +-->
+  <target name = "release" description = "Builds a full project release."
+          depends = "clean, -ensure-cross-compile-runtime, unit-test,
+                     -after-unit-test, -init-package, -package-project, -before-release">
+
+  </target>
+
+  <target name = "-ensure-cross-compile-runtime" depends = "-check-cross-compile-runtime">
+
+    <local name = "local-java-runtime"/>
+    <project-tasks:propertycopy name = "local-java-runtime" from = "java.${java.target.version}.runtime.available"/>
+
+    <condition property = "x-compile-error">
+      <equals arg1 = "${local-java-runtime}" arg2 = "true"/>
+    </condition>
+
+    <fail unless = "x-compile-error">
+      RELEASE FAILED. Required Java ${java.target.version} runtime libraries cannot be found.
+    </fail>
+
+  </target>
+
+  <extension-point name = "-before-release" depends = "clean, unit-test"/>
+
+
+  <!--
+   | Initializes a package task. The implementation usually needs to be completed with a
+   | project specific target, which can be added as an extension of the -package-project
+   | extension point.
+   +-->
+  <target name = "-init-package"
+          depends = "clean, unit-test, -after-unit-test, -before-package">
+
+    <mkdir dir = "${build.package.dir}"/>
+
+    <antcall target = "-java-style-check-strict"/>
+
+  </target>
+
+  <extension-point name = "-before-package" depends = "clean, unit-test, -after-unit-test"/>
+  <extension-point name = "-package-project" depends = "-before-package, -init-package"/>
+
+
+
+  <!--
+   | CLEAN:
+   |
+   | Deletes all generated files of this project. Public project target.
+   +-->
+  <target name = "clean" description = "Deletes generated files in this project.">
+
+    <delete dir = "${build.test.dir}"/>
+    <delete dir = "${build.package.dir}"/>
+    <delete dir = "${classes.dir}"/>
+    <delete dir = "${output.dir}"/>
+    <delete file = "${build.dir}/checkstyle-report.txt"/>
+
+  </target>
+
+</project>
+
