@@ -118,6 +118,138 @@
   </description>
 
 
+
+  <!--
+   | PACKAGE:
+   |
+   | Creates a web archive (both compressed and expanded) of the Beehive device discovery
+   | application for servlet container deployment, and client deployment libraries.
+   |
+   +-->
+  <target name = "package" extensionOf = "-after-unit-test" depends = "compile">
+
+    <property name = "war.name" value = "BeehiveDeviceDiscovery"/>
+
+    <echo message="--------------------------------------------------------------------"/>
+    <echo message=" Packaging ${war.name}-${release.version}..."/>
+    <echo message="--------------------------------------------------------------------"/>
+    <echo message=""/>
+
+
+    <!--
+         Copy the preconfigured web directory as expanded dir structure to output. Old files
+         will be overwritten...
+    -->
+
+    <copy todir = "${output.dir}/${war.name}-${release.version}" overwrite = "true">
+      <fileset dir = "resources/web"/>
+    </copy>
+
+
+    <!-- Copy compiled classes into the WEB-INF/classes hierarchy... -->
+
+    <copy todir = "${output.dir}/${war.name}-${release.version}/WEB-INF/classes" overwrite = "true">
+      <fileset dir = "${classes.dir}">
+        <exclude name = "org/openremote/beehive/discovery/client/**"/>
+      </fileset>
+    </copy>
+
+
+    <!-- Copy client classes into client classes hierarchy... -->
+
+    <copy todir = "${output.dir}/client/classes" overwrite = "true">
+
+      <fileset dir = "${classes.dir}">
+        <include name = "org/openremote/beehive/discovery/client/**/*.*"/>
+      </fileset>
+
+      <fileset dir = "${classes.dir}">
+        <include name = "org/openremote/beehive/discovery/model/*.class"/>
+      </fileset>
+    </copy>
+
+    <copy todir = "${output.dir}/client/classes/META-INF"
+           file = "${resources.dir}/client/META-INF/MANIFEST.MF">
+      <filterchain>
+        <expandproperties/>
+      </filterchain>
+    </copy>
+
+
+    <!-- Copy all runtime libs as flattened archive structure into WEB-INF/lib... -->
+
+    <copy todir     = "${output.dir}/${war.name}-${release.version}/WEB-INF/lib"
+          flatten   = "true"
+          overwrite = "true">
+
+      <fileset dir = "${lib.dir}">
+        <include name = "**/*.jar"/>
+        <exclude name = "LICENSE*"/>
+      </fileset>
+
+    </copy>
+
+    <!-- Create a compressed Web Archive... -->
+
+    <zip basedir = "${output.dir}/${war.name}-${release.version}"
+        destfile = "${output.dir}/${war.name}-${release.version}.war" whenempty = "fail">
+    </zip>
+
+
+    <!-- Create a compressed Client Archive... -->
+
+    <zip basedir = "${output.dir}/client/classes"
+        destfile = "${output.dir}/client/BeehiveDiscoveryClient-${release.version}.jar" whenempty = "fail">
+    </zip>
+
+
+    <!-- Copy client script... -->
+
+    <copy todir     = "${output.dir}/client"
+          overwrite = "true">
+
+      <fileset dir = "${resources.dir}/client">
+        <include name = "**/*.sh"/>
+      </fileset>
+    </copy>
+
+
+    <!-- Copy client libs as flattened archive structure client/lib... -->
+
+    <copy todir     = "${output.dir}/client/lib"
+          flatten   = "true"
+          overwrite = "true">
+
+      <fileset dir = "${lib.dir}/object-model-0.2.0">
+        <include name = "**/object-model-0.2.0_WIP.jar"/>
+        <exclude name = "LICENSE*"/>
+      </fileset>
+
+      <fileset dir = "${lib.dir}/javax.ws.rs-2.0">
+        <include name = "**/*.jar"/>
+        <exclude name = "LICENSE*"/>
+      </fileset>
+
+      <fileset dir = "${lib.dir}/jersey-bundles-2.6">
+        <include name = "**/*.jar"/>
+        <exclude name = "LICENSE*"/>
+      </fileset>
+
+      <fileset dir = "${lib.dir}/jersey-core-2.6" excludes = "jersey-server-*.jar" >
+        <include name = "**/*.jar"/>
+        <exclude name = "LICENSE*"/>
+      </fileset>
+
+      <fileset dir = "${lib.dir}/flexjson-3.2">
+        <include name = "**/*.jar"/>
+        <exclude name = "LICENSE*"/>
+      </fileset>
+
+    </copy>
+
+  </target>
+
+
   <!-- ========================================================= -->
   <!--  PATH DEFINITIONS.                                        -->
   <!-- ========================================================= -->
