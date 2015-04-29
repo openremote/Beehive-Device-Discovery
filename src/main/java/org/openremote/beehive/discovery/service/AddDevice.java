@@ -66,13 +66,8 @@ public class AddDevice
 
   @POST public Response create(DeviceDiscovery discovery)
   {
-//    log.info(
-//        "CREATE ACCOUNT: [Service admin: ''{0}''] created new account for user ''{1}''.",
-//        security.getUserPrincipal().getName(), user.getName()
-//    );
 
-
-    System.err.println(discovery.toJSONString());
+    System.err.println("Process and persist discovery...");
 
     return Response.ok().build();
   }
