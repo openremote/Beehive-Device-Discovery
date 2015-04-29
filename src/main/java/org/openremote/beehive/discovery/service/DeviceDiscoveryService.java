@@ -16,6 +16,7 @@
  */
 package org.openremote.beehive.discovery.service;
 
+import com.cloudseance.chronos.jaxrs.RestService;
 import org.openremote.beehive.discovery.model.rest.DeviceDiscoveryReader;
 
 import java.util.HashSet;
@@ -32,31 +33,17 @@ import javax.ws.rs.core.Context;
  * This JAX-RS application aggregates the relevant REST resources, providers and
  * features that compose the device discovery service. <p>
  *
+ * TODO
+ *
  * This implementation uses the explicit resource registration via {@link #getClasses()} method
  * to support pre-Servlet 3.0 containers. It currently assumes a servlet container-based
  * deployment.
  *
  * @author Juha Lindfors
  */
-public class DeviceDiscoveryService extends Application
+public class DeviceDiscoveryService extends RestService
 {
 
-  // Class Members --------------------------------------------------------------------------------
-
-  private static final Set<Class<?>> resourceClasses = new HashSet<Class<?>>(10);
-
-  static
-  {
-    resourceClasses.add(AddDevice.class);
-  }
-
-  private static final Set<Class<?>> providerClasses = new HashSet<Class<?>>();
-
-  static
-  {
-    providerClasses.add(DeviceDiscoveryReader.class);
-    //providerClasses.add(UserAuthorization.class);
-  }
 
 
   @Context private ServletContext webapp;
@@ -67,20 +54,11 @@ public class DeviceDiscoveryService extends Application
   public DeviceDiscoveryService()
   {
     //System.setProperty("jersey.config.server.tracing.type", "ALL");
-  }
 
+    addProvider(DeviceDiscoveryReader.class);
+    //addProvider(UserAuthorization.class);
 
-
-  // Application Overrides ------------------------------------------------------------------------
-
-  @Override public Set<Class<?>> getClasses()
-  {
-    Set<Class<?>> classes = new HashSet<Class<?>>();
-
-    classes.addAll(resourceClasses);
-    classes.addAll(providerClasses);
-
-    return classes;
+    addRestResource(AddDevice.class);
   }
 
 
