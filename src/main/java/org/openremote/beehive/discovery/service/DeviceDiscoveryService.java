@@ -19,11 +19,8 @@ package org.openremote.beehive.discovery.service;
 import com.cloudseance.chronos.jaxrs.RestService;
 import org.openremote.beehive.discovery.model.rest.DeviceDiscoveryReader;
 
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.servlet.ServletContext;
-import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
 
 

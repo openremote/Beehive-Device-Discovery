@@ -30,8 +30,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 
 import org.openremote.model.DeviceDiscovery;
-import org.openremote.model.data.json.DeserializationException;
-import org.openremote.model.data.json.DeviceDiscoveryTransformer;
 
 
 /**
