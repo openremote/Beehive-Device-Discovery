@@ -23,7 +23,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/object-model-0.2.0/object-model-0.2.0_WIP.jar!/" />
+          <root url="jar://$MODULE_DIR$/build/lib/javax.servlet-2.5/servlet-api.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -32,7 +32,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/build/lib/javax.servlet-2.5/servlet-api.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/object-model-0.2.0/object-model-0.2.0_WIP2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
