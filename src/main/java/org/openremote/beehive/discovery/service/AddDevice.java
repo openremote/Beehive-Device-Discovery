@@ -65,8 +65,9 @@ public class AddDevice
 
   @POST public Response create(DeviceDiscovery discovery)
   {
-
     System.err.println("Process and persist discovery...");
+
+    System.err.println(discovery.toJSONString());
 
     return Response.ok().build();
   }

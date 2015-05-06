@@ -30,6 +30,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 
 import org.openremote.model.DeviceDiscovery;
+import org.openremote.model.data.json.DeserializationException;
+import org.openremote.model.data.json.DeviceDiscoveryTransformer;
 
 
 /**
@@ -72,41 +74,29 @@ public class DeviceDiscoveryReader implements MessageBodyReader<DeviceDiscovery>
       // TODO : log.info("Deserializing device discovery JSON document...");
       System.err.println("Deserializing device discovery JSON document...");
 
-      BufferedReader reader = new BufferedReader(new InputStreamReader(entityStream));
 
-      String line = reader.readLine();
+      // Deserialize device discovery instance from JSON stream...
 
-      while (line != null)
-      {
-        System.err.println(line);
-
-        line = reader.readLine();
-      }
-
-      return new DeviceDiscovery("TBD", "TBD", "TBD");
-
-//      DeviceDiscoveryTransformer transformer = new DeviceDiscoveryTransformer();
-//
-//      return (DeviceDiscovery)transformer.read(
-//          new BufferedReader(new InputStreamReader(entityStream))
-//      );
+      return new DeviceDiscoveryTransformer().read(
+          new BufferedReader(new InputStreamReader(entityStream))
+      );
     }
 
-//    catch (DeserializationException exception)
-//    {
-//      // TODO : log.error(
-//      //    "Deserializing device discovery failed: {0}",
-//      //    exception, exception.getMessage()
-//      //);
-//      System.err.println("Deserializing discovery failed: " + exception.getMessage());
-//      exception.printStackTrace();
-//
-//      // TODO : propagate back to client
-//      throw new WebApplicationException("Unable to parse device discovery from JSON: " + exception.getMessage());
-//      //throw new HttpBadRequest(
-//      //    exception, "Unable to parse device discovery from JSON: " + exception.getMessage()
-//      //);
-//    }
+    catch (DeserializationException exception)
+    {
+      // TODO : log.error(
+      //    "Deserializing device discovery failed: {0}",
+      //    exception, exception.getMessage()
+      //);
+      System.err.println("Deserializing discovery failed: " + exception.getMessage());
+      exception.printStackTrace();
+
+      // TODO : propagate back to client
+      throw new WebApplicationException("Unable to parse device discovery from JSON: " + exception.getMessage());
+      //throw new HttpBadRequest(
+      //    exception, "Unable to parse device discovery from JSON: " + exception.getMessage()
+      //);
+    }
 
 //    catch (ClassCastException exception)
 //    {
