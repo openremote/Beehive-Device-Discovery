@@ -92,7 +92,9 @@ public class DeviceDiscoveryReader implements MessageBodyReader<DeviceDiscovery>
       exception.printStackTrace();
 
       // TODO : propagate back to client
-      throw new WebApplicationException("Unable to parse device discovery from JSON: " + exception.getMessage());
+      throw new WebApplicationException(
+          "Unable to parse device discovery from JSON: " + exception.getMessage()
+      );
       //throw new HttpBadRequest(
       //    exception, "Unable to parse device discovery from JSON: " + exception.getMessage()
       //);
