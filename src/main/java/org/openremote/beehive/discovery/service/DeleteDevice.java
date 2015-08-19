@@ -20,10 +20,7 @@ import org.openremote.beehive.discovery.model.rest.DeviceDiscoveryReader;
 import org.openremote.model.DeviceDiscovery;
 
 import javax.servlet.ServletContext;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
@@ -32,14 +29,14 @@ import java.util.Map;
 
 
 /**
- * Beehive Device Discovery REST API for adding new devices.
+ * Beehive Device Discovery REST API for removing an existing device.
  *
  * @author Eric Bariaux
  */
 
 @Path("/devicediscovery/{deviceIdentifier}")
 
-public class AddDevice
+public class DeleteDevice
 {
 
   // Instance Fields ------------------------------------------------------------------------------
@@ -52,30 +49,24 @@ public class AddDevice
 
   @Context private ServletContext webapp;
 
-
   // REST API Implementation ----------------------------------------------------------------------
 
-  @Consumes(DeviceDiscoveryReader.JSON_HTTP_CONTENT_TYPE)
-
-  @POST public Response create(DeviceDiscovery discovery, @PathParam("deviceIdentifier") String deviceIdentifier)
+  @DELETE
+  public Response delete(@PathParam("deviceIdentifier") String deviceIdentifier)
   {
-    System.err.println("Process and persist discovery...");
-
-    System.err.println(discovery.toJSONString());
+    System.err.println("Delete device discovery...");
 
     Map<String, DeviceDiscovery> devices = (Map<String, DeviceDiscovery>) webapp.getAttribute("devicesMap");
     if (devices == null) {
-      devices = new HashMap<String, DeviceDiscovery>();
-      webapp.setAttribute("devicesMap", devices);
+      Response.status(Response.Status.NOT_FOUND).build();
+    } else {
+      if (devices.get(deviceIdentifier) == null) {
+        return Response.status(Response.Status.NOT_FOUND).build();
+      }
+      devices.remove(deviceIdentifier);
     }
 
-    if (devices.get(deviceIdentifier) != null) {
-      return Response.status(Response.Status.CONFLICT).build();
-    }
-
-    devices.put(deviceIdentifier, discovery);
-
-    return Response.noContent().build();
+    return Response.ok().build();
   }
 
 }
