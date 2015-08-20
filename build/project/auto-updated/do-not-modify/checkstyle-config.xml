@@ -143,11 +143,11 @@
 
     <!--
      | Checks for long lines. Code convention sets line length limit at 100 characters. We are
-     | a little lenient but put a hard max at 105 characters.
+     | a little lenient but put a hard max at 132 characters.
      +-->
     <module name = "LineLength">
 
-      <property name = "max" value = "105"/>
+      <property name = "max" value = "132"/>
 
       <!--
          Ignore code lines that start with white space characters (zero or more : '^\s*')
