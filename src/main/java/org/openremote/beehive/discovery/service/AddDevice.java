@@ -65,6 +65,12 @@ public class AddDevice
   {
     System.err.println("Process and persist discovery...");
 
+    // We explicitly forbid access by users with service-admin role (even if user has account-owner role)
+    if (security.isUserInRole("service-admin"))
+    {
+      return Response.status(Response.Status.FORBIDDEN).build();
+    }
+
     System.err.println(discovery.toJSONString());
 
     Map<String, DeviceDiscovery> devices = (Map<String, DeviceDiscovery>) webapp.getAttribute("devicesMap");

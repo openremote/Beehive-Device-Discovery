@@ -61,6 +61,12 @@ public class DeleteDevice
   {
     System.err.println("Delete device discovery...");
 
+    // We explicitly forbid access by users with service-admin role (even if user has account-owner role)
+    if (security.isUserInRole("service-admin"))
+    {
+      return Response.status(Response.Status.FORBIDDEN).build();
+    }
+
     Map<String, DeviceDiscovery> devices = (Map<String, DeviceDiscovery>) webapp.getAttribute("devicesMap");
     if (devices == null)
     {
