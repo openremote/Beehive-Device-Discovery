@@ -45,6 +45,8 @@ import java.util.Map;
 public class GetDevice
 {
 
+  public static final String DEVICE_DISCOVERY_LIST_JSON_HTTP_CONTENT_TYPE = "application/vnd.openremote.device-discovery-list+json";
+
   // Instance Fields ------------------------------------------------------------------------------
 
   /**
@@ -58,8 +60,7 @@ public class GetDevice
 
   // REST API Implementation ----------------------------------------------------------------------
 
-  @Produces("application/vnd.openremote.device-discovery-list+json") // TODO: have constant for this
-
+  @Produces(DEVICE_DISCOVERY_LIST_JSON_HTTP_CONTENT_TYPE)
   @GET
   public Response list()
   {
