@@ -70,7 +70,7 @@ public class DeleteDevice
     Map<String, DeviceDiscovery> devices = (Map<String, DeviceDiscovery>) webapp.getAttribute("devicesMap");
     if (devices == null)
     {
-      Response.status(Response.Status.NOT_FOUND).build();
+      return Response.status(Response.Status.NOT_FOUND).build();
     }
     else
     {
