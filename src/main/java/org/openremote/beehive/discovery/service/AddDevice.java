@@ -68,12 +68,14 @@ public class AddDevice
     System.err.println(discovery.toJSONString());
 
     Map<String, DeviceDiscovery> devices = (Map<String, DeviceDiscovery>) webapp.getAttribute("devicesMap");
-    if (devices == null) {
+    if (devices == null)
+    {
       devices = new HashMap<String, DeviceDiscovery>();
       webapp.setAttribute("devicesMap", devices);
     }
 
-    if (devices.get(deviceIdentifier) != null) {
+    if (devices.get(deviceIdentifier) != null)
+    {
       return Response.status(Response.Status.CONFLICT).build();
     }
 

@@ -21,15 +21,15 @@
 
 package org.openremote.beehive.discovery.service;
 
-import org.openremote.beehive.discovery.model.rest.DeviceDiscoveryReader;
 import org.openremote.model.DeviceDiscovery;
 
 import javax.servlet.ServletContext;
-import javax.ws.rs.*;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-import java.util.HashMap;
 import java.util.Map;
 
 
@@ -62,10 +62,14 @@ public class DeleteDevice
     System.err.println("Delete device discovery...");
 
     Map<String, DeviceDiscovery> devices = (Map<String, DeviceDiscovery>) webapp.getAttribute("devicesMap");
-    if (devices == null) {
+    if (devices == null)
+    {
       Response.status(Response.Status.NOT_FOUND).build();
-    } else {
-      if (devices.get(deviceIdentifier) == null) {
+    }
+    else
+    {
+      if (devices.get(deviceIdentifier) == null)
+      {
         return Response.status(Response.Status.NOT_FOUND).build();
       }
       devices.remove(deviceIdentifier);

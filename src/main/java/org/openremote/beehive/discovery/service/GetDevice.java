@@ -68,9 +68,12 @@ public class GetDevice
 
 
     Map<String, DeviceDiscovery> devices = (Map<String, DeviceDiscovery>) webapp.getAttribute("devicesMap");
-    if (devices != null) {
+    if (devices != null)
+    {
       return Response.ok(DeviceDiscovery.toJSONString(new HashSet(devices.values()))).build();
-    } else {
+    }
+    else
+    {
       return Response.ok(DeviceDiscovery.toJSONString(new HashSet())).build();
     }
   }
