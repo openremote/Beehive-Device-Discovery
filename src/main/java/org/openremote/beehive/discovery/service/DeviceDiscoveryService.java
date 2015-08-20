@@ -60,6 +60,7 @@ public class DeviceDiscoveryService extends RestService
     addProvider(DeviceDiscoveryReader.class);
     //addProvider(UserAuthorization.class);
 
+    addRestResource(GetDevice.class);
     addRestResource(AddDevice.class);
     addRestResource(DeleteDevice.class);
   }
