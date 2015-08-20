@@ -1,5 +1,9 @@
 /*
- * Copyright 2013-2015, Juha Lindfors. All rights reserved.
+ * OpenRemote, the Home of the Digital Home.
+ * Copyright 2008-2015, OpenRemote Inc.
+ *
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -14,6 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.openremote.beehive.discovery.service;
 
 import com.cloudseance.chronos.jaxrs.RestService;
