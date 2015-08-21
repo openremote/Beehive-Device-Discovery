@@ -141,7 +141,6 @@
         <!-- User roles required to access device discovery resources... -->
 
         <auth-constraint>
-            <role-name>service-admin</role-name>
             <role-name>account-owner</role-name>
         </auth-constraint>
 
