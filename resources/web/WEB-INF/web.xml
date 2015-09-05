@@ -144,9 +144,9 @@
             <role-name>account-owner</role-name>
         </auth-constraint>
 
-
         <!-- Enforce HTTPS access... -->
 
+        <!--
         <user-data-constraint>
 
             <description>
@@ -157,6 +157,8 @@
             <transport-guarantee>CONFIDENTIAL</transport-guarantee>
 
         </user-data-constraint>
+
+        -->
 
     </security-constraint>
 
