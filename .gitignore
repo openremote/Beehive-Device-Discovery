@@ -1,7 +1,10 @@
-output/
-build/checkstyle-report.txt
-build/classes/
-build/package/
-build/test/
-build/project/auto-updated/do-not-modify/lib/java-1.6/
+.classpath
+.project
 
+*.iml
+*.ipr
+*.iws
+.idea/
+
+build/
+.gradle

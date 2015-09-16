@@ -1,0 +1,24 @@
+apply plugin: "java"
+apply plugin: "war"
+
+// TODO Must compile with JDK 1.7 http://www.draconianoverlord.com/2014/04/01/jdk-compatibility.html
+sourceCompatibility = 1.7
+version = projectVersion
+
+repositories {
+    jcenter();
+    mavenCentral()
+}
+
+dependencies {
+
+    // TODO Replace this with artifact dependencies
+    compile fileTree("${projectDir}/lib/openremote-object-model-0.2.0_WIP.jar")
+    // TODO The openremote-object-model-persistence-0.2.0_WIP.jar contains an invalid persistence.xml and can't be deployed!
+
+    compile "net.sf.flexjson:flexjson:$flexjsonVersion"
+
+    providedCompile "javax.ws.rs:javax.ws.rs-api:$jaxrsVersion"
+    providedCompile "javax.servlet:javax.servlet-api:$servletVersion"
+
+}
