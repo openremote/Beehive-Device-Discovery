@@ -17,6 +17,7 @@ dependencies {
     // TODO The openremote-object-model-persistence-0.2.0_WIP.jar contains an invalid persistence.xml and can't be deployed!
 
     compile "net.sf.flexjson:flexjson:$flexjsonVersion"
+    compile "org.slf4j:slf4j-api:$slf4jVersion"
 
     providedCompile "javax.ws.rs:javax.ws.rs-api:$jaxrsVersion"
     providedCompile "javax.servlet:javax.servlet-api:$servletVersion"

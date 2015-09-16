@@ -22,6 +22,8 @@ package org.openremote.beehive.discovery.service;
 
 import org.openremote.beehive.discovery.model.rest.DeviceDiscoveryReader;
 import org.openremote.model.DeviceDiscovery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
@@ -40,6 +42,8 @@ import java.util.Map;
 @Path("/")
 public class DeviceDiscoveryService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(DeviceDiscoveryService.class);
+
     public static final String DEVICE_DISCOVERY_LIST_JSON_HTTP_CONTENT_TYPE = "application/vnd.openremote.device-discovery-list+json";
 
     @Context
@@ -51,7 +55,7 @@ public class DeviceDiscoveryService {
     @GET
     @Produces(DEVICE_DISCOVERY_LIST_JSON_HTTP_CONTENT_TYPE)
     public Response list() {
-        System.err.println("List discovery information...");
+        LOG.info("### List discovery information...");
 
         // We explicitly forbid access by users with service-admin role (even if user has account-owner role)
         if (security.isUserInRole("service-admin")) {
@@ -72,14 +76,14 @@ public class DeviceDiscoveryService {
     @POST
     @Consumes(DeviceDiscoveryReader.JSON_HTTP_CONTENT_TYPE)
     public Response create(DeviceDiscovery discovery, @PathParam("deviceIdentifier") String deviceIdentifier) {
-        System.err.println("Process and persist discovery...");
+        LOG.info("### Process and persist discovery...");
 
         // We explicitly forbid access by users with service-admin role (even if user has account-owner role)
         if (security.isUserInRole("service-admin")) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
 
-        System.err.println(discovery.toJSONString());
+        LOG.info("### " + discovery.toJSONString());
 
         @SuppressWarnings("unchecked")
         Map<String, DeviceDiscovery> devices = (Map<String, DeviceDiscovery>) webapp.getAttribute("devicesMap");
@@ -101,7 +105,7 @@ public class DeviceDiscoveryService {
     @Path("{deviceIdentifier}")
     @DELETE
     public Response delete(@PathParam("deviceIdentifier") String deviceIdentifier) {
-        System.err.println("Delete device discovery...");
+        LOG.info("### Delete device discovery...");
 
         // We explicitly forbid access by users with service-admin role (even if user has account-owner role)
         if (security.isUserInRole("service-admin")) {
