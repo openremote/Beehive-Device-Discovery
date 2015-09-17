@@ -32,7 +32,6 @@ import java.util.Set;
  *
  * @author Juha Lindfors
  */
-@ApplicationPath("/")
 public class DeviceDiscoveryApplication extends Application {
 
     @Override

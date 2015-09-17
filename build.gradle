@@ -18,8 +18,11 @@ dependencies {
 
     compile "net.sf.flexjson:flexjson:$flexjsonVersion"
     compile "org.slf4j:slf4j-api:$slf4jVersion"
+    compile "org.glassfish.jersey.containers:jersey-container-servlet-core:$jerseyVersion"
+    compile "javax.ws.rs:javax.ws.rs-api:$jaxrsVersion"
 
-    providedCompile "javax.ws.rs:javax.ws.rs-api:$jaxrsVersion"
+    compile "ch.qos.logback:logback-classic:$logbackVersion"
+
     providedCompile "javax.servlet:javax.servlet-api:$servletVersion"
 
 }

@@ -1,10 +1,160 @@
-<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
-         version="3.1">
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         version="3.0">
 
     <display-name>Beehive Device Discovery REST API</display-name>
 
-    <!-- TODO Security -->
+    <!--
+    =================================================================================================
+
+      Map servlet Java class implementations to URLs.
+
+      This mapping links the JAX-RS 2.0 implementation to Glassfish Jersey based implementation
+      of the API.
+
+    =================================================================================================
+    -->
+
+
+    <servlet>
+        <servlet-name>Jersey Servlet Container for Beehive Device Discovery</servlet-name>
+
+        <!-- Jersey implementation -->
+
+        <servlet-class>
+            org.glassfish.jersey.servlet.ServletContainer
+        </servlet-class>
+
+        <!-- JAX-RS 2.0 configuration to link JAX-RS application -->
+
+        <init-param>
+            <param-name>javax.ws.rs.Application</param-name>
+            <param-value>org.openremote.beehive.discovery.DeviceDiscoveryApplication</param-value>
+        </init-param>
+
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+
+    <!--
+
+         URL Mapping:
+
+         As per the Beehive REST API design convention, all REST API calls start with '/rest' path.
+         The following '/rpc' path indicates the REST API design style (RPC vs HATEOAS) followed
+         by service name path '/devicediscovery' and service API version path '/2/0/0'.
+
+         Therefore a deployment URL might be:
+
+         https://beehive.openremote.org/rest/rpc/devicediscovery/2/0/0/[resource-path]
+
+    -->
+
+    <servlet-mapping>
+        <servlet-name>Jersey Servlet Container for Beehive Device Discovery</servlet-name>
+        <url-pattern>/rest/rpc/devicediscovery/2/0/0/*</url-pattern>
+    </servlet-mapping>
+
+
+
+    <!--
+    =================================================================================================
+
+      Security Configuration
+
+      This configuration section establishes role-based access to (by default) all of the Device
+      Discovery service resources. Each resource access requires at minimum a basic authentication
+      to access, and all access must be established via confidential communication channel (e.g.
+      HTTPS).
+
+      The two roles set up with discovery service access are 'service-admin' and 'account-owner'.
+      The former is used for a typical administrative access. The latter 'account-owner' role
+      should be used by the service implementation to restrict access to the authenticated user's
+      account only.
+
+    =================================================================================================
+    -->
+
+
+    <security-constraint>
+
+        <display-name>Beehive Device Discovery Security</display-name>
+
+        <!--
+             Defines an URL pattern to include all resource access to device discovery service.
+             The HTTP method elements are not included meaning all HTTP requests must conform
+             to the configured security constraints...
+        -->
+        <web-resource-collection>
+
+            <web-resource-name>All Service Access to Beehive Device Discovery</web-resource-name>
+
+            <description>
+                This configuration constraints all HTTP method access to all of the device
+                discovery service resources.
+            </description>
+
+            <url-pattern>/rest/rpc/devicediscovery/*</url-pattern>
+
+        </web-resource-collection>
+
+
+        <!-- User roles required to access device discovery resources... -->
+
+        <auth-constraint>
+            <role-name>account-owner</role-name>
+        </auth-constraint>
+
+        <!-- Enforce HTTPS access... -->
+
+        <!--
+        <user-data-constraint>
+
+            <description>
+                All service access requests must arrive through confidential (HTTPS) communication
+                channel.
+            </description>
+
+            <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+
+        </user-data-constraint>
+
+        -->
+
+    </security-constraint>
+
+
+    <!-- At minimum, require HTTP Basic authorization... -->
+
+    <login-config>
+        <auth-method>BASIC</auth-method>
+        <realm-name>BeehiveDeviceDiscovery</realm-name>
+    </login-config>
+
+
+    <!-- Define the security roles... -->
+
+    <security-role>
+
+        <description>
+            Service administrators have full access to all operations. Therefore additional
+            security policies should be placed on any login using this role
+            (restricting IP range, etc.)
+        </description>
+
+        <role-name>service-admin</role-name>
+
+    </security-role>
+
+    <security-role>
+
+        <description>
+            Account owner is the basic role required to access a user's own account.
+        </description>
+
+        <role-name>account-owner</role-name>
+
+    </security-role>
 
 </web-app>
