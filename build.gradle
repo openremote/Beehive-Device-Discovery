@@ -14,12 +14,16 @@ dependencies {
 
     // TODO Replace this with artifact dependencies
     compile fileTree("${projectDir}/lib/openremote-object-model-0.2.0_WIP.jar")
-    // TODO The openremote-object-model-persistence-0.2.0_WIP.jar contains an invalid persistence.xml and can't be deployed!
 
     compile "net.sf.flexjson:flexjson:$flexjsonVersion"
     compile "org.slf4j:slf4j-api:$slf4jVersion"
     compile "org.glassfish.jersey.containers:jersey-container-servlet-core:$jerseyVersion"
     compile "javax.ws.rs:javax.ws.rs-api:$jaxrsVersion"
+
+    compile "org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final"
+
+    compile "org.hibernate:hibernate-core:$hibernateVersion"
+    compile "org.hibernate:hibernate-entitymanager:$hibernateVersion"
 
     compile "ch.qos.logback:logback-classic:$logbackVersion"
 

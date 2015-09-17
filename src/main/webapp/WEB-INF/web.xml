@@ -6,6 +6,106 @@
     <display-name>Beehive Device Discovery REST API</display-name>
 
     <!--
+=================================================================================================
+
+  Servlet filters for request pre-processing and response post-processing
+
+=================================================================================================
+-->
+
+    <filter>
+        <description>
+            An automated JPA per-request transaction management
+        </description>
+
+        <filter-name>Transaction Management</filter-name>
+        <filter-class>org.openremote.beehive.EntityTransactionFilter</filter-class>
+
+        <!--
+         | Name of the persistence context used in the transaction management filter.
+         | This must be defined in the persistence.xml file.
+         +-->
+        <init-param>
+            <param-name>PersistenceContext</param-name>
+            <param-value>Device-Discovery-MySQL</param-value>
+        </init-param>
+
+        <!--
+         | OPTIONAL:  JPA JDBC driver standard persistence context property. This will override
+         |            the property defined in the persistence.xml for the persistence context,
+         |            if any is defined.
+         +-->
+        <init-param>
+            <param-name>javax.persistence.jdbc.driver</param-name>
+            <param-value>com.mysql.jdbc.Driver</param-value>
+        </init-param>
+
+        <!--
+         | OPTIONAL:  JPA JDBC URL standard persistence context property. This will override
+         |            the property defined in the persistence.xml for the persistence context,
+         |            if any is defined.
+         +-->
+        <init-param>
+            <param-name>javax.persistence.jdbc.url</param-name>
+            <param-value>jdbc:mysql://localhost:3306/beehive2?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8</param-value>
+        </init-param>
+
+        <!--
+         | OPTIONAL:  JPA JDBC user standard persistence context property. This will override
+         |            the property defined in the persistence.xml for persistence context,
+         |            if any is defined.
+         +-->
+        <init-param>
+            <param-name>javax.persistence.jdbc.user</param-name>
+            <param-value>beehive2</param-value>
+        </init-param>
+        <init-param>
+            <param-name>javax.persistence.jdbc.password</param-name>
+            <param-value>beehive</param-value>
+        </init-param>
+
+
+        <!--
+         | Other properties: add other properties for persistence context here, if you want to
+         |                   override the properties defined in the persistence.xml (and do not
+         |                   wish to modify the persistence.xml directly). E.g. hibernate specific
+         |                   properties:
+         |
+         |                     - hibernate.connection.pool_size
+         |                     - hibernate.cache.provider_class
+         |                     - hibernate.hbm2ddl.auto
+         |
+         |                   For each property, add a corresponding entry:
+         |
+         |                       <init-param>
+         |                         <param-name>name</param-name>
+         |                         <param-value>value</param-value>
+         |                       </init-param>
+         |
+         |                   Note that only properties starting with prefix 'javax.persistence.' or
+         |                   'hibernate.' are accepted.
+         +-->
+
+        <init-param>
+            <param-name>hibernate.dialect</param-name>
+            <param-value>org.hibernate.dialect.MySQLDialect</param-value>
+        </init-param>
+
+    </filter>
+
+    <!--
+     | Apply transaction management to application servlet.
+     +-->
+    <filter-mapping>
+        <filter-name>Transaction Management</filter-name>
+        <servlet-name>Jersey Servlet Container for Beehive Device Discovery</servlet-name>
+
+        <!-- Apply filter for requests originating from the client only -->
+        <dispatcher>REQUEST</dispatcher>
+
+    </filter-mapping>
+
+    <!--
     =================================================================================================
 
       Map servlet Java class implementations to URLs.

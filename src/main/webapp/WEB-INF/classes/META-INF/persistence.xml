@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Copyright 2013-2015, Juha Lindfors. All rights reserved.
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as
+  published by the Free Software Foundation; either version 3 of the
+  License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU Affero General Public License for more details.
+
+  You should have received a copy of the GNU Affero General Public License
+  along with this program; if not, see <http://www.gnu.org/licenses/>.
+-->
+
+
+<!--
+
+  TODO
+
+  Author: Eric Bariaux
+
+-->
+<persistence
+    xmlns = "http://java.sun.com/xml/ns/persistence"
+    xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation = "http://java.sun.com/xml/ns/persistence
+                          http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+    version="2.0">
+
+  <persistence-unit name = "Device-Discovery-MySQL">
+    <description>TODO</description>
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+    <mapping-file>DeviceDiscovery.xml</mapping-file>
+
+    <class>org.openremote.beehive.discovery.model.persistence.jpa.PersistentDeviceDiscovery</class>
+
+    <properties>
+      <property name = "javax.persistence.jdbc.driver" value = "com.mysql.jdbc.Driver"/>
+      <property name = "javax.persistence.jdbc.url" value = "jdbc:mysql://localhost:3306/beehive?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
+
+      <property name = "hibernate.connection.pool_size" value = "10"/>
+      <property name = "hibernate.cache.provider_class" value = "org.hibernate.cache.internal.NoCacheProvider"/>
+      <property name = "hibernate.dialect" value = "org.hibernate.dialect.MySQLDialect"/>
+      <property name = "hibernate.hbm2ddl.auto" value = "validate"/>
+      <property name = "hibernate.current_session_context_class" value = "managed"/>
+    </properties>
+
+  </persistence-unit>
+
+</persistence>
