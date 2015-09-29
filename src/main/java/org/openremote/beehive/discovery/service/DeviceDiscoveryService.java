@@ -138,10 +138,10 @@ public class DeviceDiscoveryService {
       return Response.ok().build();
     }
 
-    private EntityManager getEntityManager(HttpServletRequest request)
-    {
-        return (EntityManager)request.getAttribute(EntityTransactionFilter.PERSISTENCE_ENTITY_MANAGER_LOOKUP);
-    }
+  private EntityManager getEntityManager(HttpServletRequest request)
+  {
+    return (EntityManager)request.getAttribute(EntityTransactionFilter.PERSISTENCE_ENTITY_MANAGER_LOOKUP);
+  }
 
   private String getAccountId(EntityManager entityManager, String userName)
   {
