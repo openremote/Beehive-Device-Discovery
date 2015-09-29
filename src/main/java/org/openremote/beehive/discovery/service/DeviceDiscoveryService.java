@@ -169,8 +169,6 @@ public class DeviceDiscoveryService {
 
   private DeviceDiscovery getDeviceDiscovery(EntityManager entityManager, String accountId, String deviceIdentifier)
   {
-    System.out.println("accountId " + accountId);
-    System.out.println("deviceIdentifier " + deviceIdentifier);
     CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
     CriteriaQuery<PersistentDeviceDiscovery> deviceDiscoveryQuery = criteriaBuilder.createQuery(PersistentDeviceDiscovery.class);
     Root<PersistentDeviceDiscovery> deviceDiscoveryRoot = deviceDiscoveryQuery.from(PersistentDeviceDiscovery.class);
