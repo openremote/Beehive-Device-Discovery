@@ -153,7 +153,7 @@
 
     <servlet-mapping>
         <servlet-name>Jersey Servlet Container for Beehive Device Discovery</servlet-name>
-        <url-pattern>/rest/rpc/devicediscovery/2/0/0/*</url-pattern>
+        <url-pattern>/rest/rpc/devicediscovery/2/0/0/devicediscovery/*</url-pattern>
     </servlet-mapping>
 
 
