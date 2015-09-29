@@ -81,13 +81,13 @@
           while key must be unique per instance, it does not need to be unique across all
           instances stored in the table.
         -->
-        <map-key-column name = "key"/>
+        <map-key-column name = "attribute_key"/>
 
         <!--
           Name the value column in relational schema. Set column length to 1000 characters.
           Null values are not allowed, values are not unique.
         -->
-        <column name = "value" length = "1000"/>
+        <column name = "attribute_value" length = "1000"/>
 
         <!--
           Name the device attribute key,value table and the join column used to map the
