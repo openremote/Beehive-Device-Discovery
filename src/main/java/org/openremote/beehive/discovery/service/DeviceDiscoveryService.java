@@ -77,9 +77,11 @@ public class DeviceDiscoveryService {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
 
-        String accountId = getAccountId(getEntityManager(request), security.getUserPrincipal().getName());
+      EntityManager entityManager = getEntityManager(request);
 
-        Set<DeviceDiscovery> devices = getDeviceDiscoveryList(getEntityManager(request), accountId);
+        String accountId = getAccountId(entityManager, security.getUserPrincipal().getName());
+
+        Set<DeviceDiscovery> devices = getDeviceDiscoveryList(entityManager, accountId);
 
         if (devices != null) {
             return Response.ok(DeviceDiscovery.toJSONString(devices)).build();
@@ -101,9 +103,10 @@ public class DeviceDiscoveryService {
 
         LOG.info("### " + discovery.toJSONString());
 
-      String accountId = getAccountId(getEntityManager(request), security.getUserPrincipal().getName());
+      EntityManager entityManager = getEntityManager(request);
+      String accountId = getAccountId(entityManager, security.getUserPrincipal().getName());
 
-      DeviceDiscovery deviceDiscovery = getDeviceDiscovery(getEntityManager(request), accountId, deviceIdentifier);
+      DeviceDiscovery deviceDiscovery = getDeviceDiscovery(entityManager, accountId, deviceIdentifier);
 
       if (deviceDiscovery != null) {
         return Response.status(Response.Status.CONFLICT).build();
@@ -126,9 +129,11 @@ public class DeviceDiscoveryService {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
 
-      String accountId = getAccountId(getEntityManager(request), security.getUserPrincipal().getName());
+      EntityManager entityManager = getEntityManager(request);
 
-      DeviceDiscovery deviceDiscovery = getDeviceDiscovery(getEntityManager(request), accountId, deviceIdentifier);
+      String accountId = getAccountId(entityManager, security.getUserPrincipal().getName());
+
+      DeviceDiscovery deviceDiscovery = getDeviceDiscovery(entityManager, accountId, deviceIdentifier);
 
       if (deviceDiscovery == null) {
         return Response.status(Response.Status.NOT_FOUND).build();
