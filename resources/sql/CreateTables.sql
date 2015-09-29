@@ -12,9 +12,9 @@ DEFAULT CHARACTER SET = utf8;
 
 CREATE TABLE IF NOT EXISTS discovered_device_attributes (
   discovered_device_id BIGINT(20) NOT NULL,
-  `key` VARCHAR(255) NOT NULL,
-  value VARCHAR(1000) NOT NULL,
-  PRIMARY KEY (discovered_device_id, `key`),
+  attribute_key VARCHAR(255) NOT NULL,
+  attribute_value VARCHAR(1000) NOT NULL,
+  PRIMARY KEY (discovered_device_id, attribute_key),
   CONSTRAINT FOREIGN KEY (discovered_device_id)
   REFERENCES discovered_device (id))
 ENGINE = InnoDB
