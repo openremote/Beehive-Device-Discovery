@@ -21,6 +21,7 @@
 package org.openremote.beehive.discovery.service;
 
 import org.openremote.beehive.EntityTransactionFilter;
+import org.openremote.beehive.discovery.model.persistence.jpa.MinimalPersistentUser;
 import org.openremote.beehive.discovery.model.persistence.jpa.PersistentDeviceDiscovery;
 import org.openremote.beehive.discovery.model.rest.DeviceDiscoveryReader;
 import org.openremote.model.DeviceDiscovery;
@@ -76,7 +77,7 @@ public class DeviceDiscoveryService {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
 
-        String accountId = getAccountId(security.getUserPrincipal().getName());
+        String accountId = getAccountId(getEntityManager(request), security.getUserPrincipal().getName());
 
         Set<DeviceDiscovery> devices = getDeviceDiscoveryList(getEntityManager(request), accountId);
 
@@ -100,7 +101,7 @@ public class DeviceDiscoveryService {
 
         LOG.info("### " + discovery.toJSONString());
 
-      String accountId = getAccountId(security.getUserPrincipal().getName());
+      String accountId = getAccountId(getEntityManager(request), security.getUserPrincipal().getName());
 
       DeviceDiscovery deviceDiscovery = getDeviceDiscovery(getEntityManager(request), accountId, deviceIdentifier);
 
@@ -125,7 +126,7 @@ public class DeviceDiscoveryService {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
 
-      String accountId = getAccountId(security.getUserPrincipal().getName());
+      String accountId = getAccountId(getEntityManager(request), security.getUserPrincipal().getName());
 
       DeviceDiscovery deviceDiscovery = getDeviceDiscovery(getEntityManager(request), accountId, deviceIdentifier);
 
@@ -142,10 +143,16 @@ public class DeviceDiscoveryService {
         return (EntityManager)request.getAttribute(EntityTransactionFilter.PERSISTENCE_ENTITY_MANAGER_LOOKUP);
     }
 
-  private String getAccountId(String userName)
+  private String getAccountId(EntityManager entityManager, String userName)
   {
-    // TODO: replace with lookup in the database / call to appropriate service
-    return "1";
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<MinimalPersistentUser> userQuery = criteriaBuilder.createQuery(MinimalPersistentUser.class);
+    Root<MinimalPersistentUser> userRoot = userQuery.from(MinimalPersistentUser.class);
+    userQuery.select(userRoot);
+    userQuery.where(criteriaBuilder.equal(userRoot.get("username"), userName));
+
+    MinimalPersistentUser user = entityManager.createQuery(userQuery).getSingleResult();
+    return Long.toString(user.getAccountId());
   }
 
   private Set<DeviceDiscovery> getDeviceDiscoveryList(EntityManager entityManager, String accountId)
