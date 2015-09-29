@@ -20,19 +20,33 @@
  */
 package org.openremote.beehive.discovery.service;
 
+import org.openremote.beehive.EntityTransactionFilter;
+import org.openremote.beehive.discovery.model.persistence.jpa.PersistentDeviceDiscovery;
 import org.openremote.beehive.discovery.model.rest.DeviceDiscoveryReader;
 import org.openremote.model.DeviceDiscovery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import javax.servlet.ServletContext;
-import javax.ws.rs.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Beehive Device Discovery REST API for adding/removing/listing devices.
@@ -54,7 +68,7 @@ public class DeviceDiscoveryService {
 
     @GET
     @Produces(DEVICE_DISCOVERY_LIST_JSON_HTTP_CONTENT_TYPE)
-    public Response list() {
+    public Response list(@Context HttpServletRequest request) {
         LOG.info("### List discovery information...");
 
         // We explicitly forbid access by users with service-admin role (even if user has account-owner role)
@@ -62,11 +76,12 @@ public class DeviceDiscoveryService {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
 
-        @SuppressWarnings("unchecked")
-        Map<String, DeviceDiscovery> devices = (Map<String, DeviceDiscovery>) webapp.getAttribute("devicesMap");
+        String accountId = getAccountId(security.getUserPrincipal().getName());
+
+        Set<DeviceDiscovery> devices = getDeviceDiscoveryList(getEntityManager(request), accountId);
 
         if (devices != null) {
-            return Response.ok(DeviceDiscovery.toJSONString(new HashSet<>(devices.values()))).build();
+            return Response.ok(DeviceDiscovery.toJSONString(devices)).build();
         } else {
             return Response.ok(DeviceDiscovery.toJSONString(new HashSet<DeviceDiscovery>())).build();
         }
@@ -75,7 +90,7 @@ public class DeviceDiscoveryService {
     @Path("{deviceIdentifier}")
     @POST
     @Consumes(DeviceDiscoveryReader.JSON_HTTP_CONTENT_TYPE)
-    public Response create(DeviceDiscovery discovery, @PathParam("deviceIdentifier") String deviceIdentifier) {
+    public Response create(@Context HttpServletRequest request, DeviceDiscovery discovery, @PathParam("deviceIdentifier") String deviceIdentifier) {
         LOG.info("### Process and persist discovery...");
 
         // We explicitly forbid access by users with service-admin role (even if user has account-owner role)
@@ -85,26 +100,24 @@ public class DeviceDiscoveryService {
 
         LOG.info("### " + discovery.toJSONString());
 
-        @SuppressWarnings("unchecked")
-        Map<String, DeviceDiscovery> devices = (Map<String, DeviceDiscovery>) webapp.getAttribute("devicesMap");
+      String accountId = getAccountId(security.getUserPrincipal().getName());
 
-        if (devices == null) {
-            devices = new HashMap<>();
-            webapp.setAttribute("devicesMap", devices);
-        }
+      DeviceDiscovery deviceDiscovery = getDeviceDiscovery(getEntityManager(request), accountId, deviceIdentifier);
 
-        if (devices.get(deviceIdentifier) != null) {
-            return Response.status(Response.Status.CONFLICT).build();
-        }
+      if (deviceDiscovery != null) {
+        return Response.status(Response.Status.CONFLICT).build();
+      }
 
-        devices.put(deviceIdentifier, discovery);
+      PersistentDeviceDiscovery persistentDeviceDiscovery = new PersistentDeviceDiscovery(discovery);
+      persistentDeviceDiscovery.setAccountId(accountId);
+      getEntityManager(request).persist(persistentDeviceDiscovery);
 
-        return Response.noContent().build();
+      return Response.noContent().build();
     }
 
     @Path("{deviceIdentifier}")
     @DELETE
-    public Response delete(@PathParam("deviceIdentifier") String deviceIdentifier) {
+    public Response delete(@Context HttpServletRequest request, @PathParam("deviceIdentifier") String deviceIdentifier) {
         LOG.info("### Delete device discovery...");
 
         // We explicitly forbid access by users with service-admin role (even if user has account-owner role)
@@ -112,19 +125,59 @@ public class DeviceDiscoveryService {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
 
-        @SuppressWarnings("unchecked")
-        Map<String, DeviceDiscovery> devices = (Map<String, DeviceDiscovery>) webapp.getAttribute("devicesMap");
+      String accountId = getAccountId(security.getUserPrincipal().getName());
 
-        if (devices == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        } else {
-            if (devices.get(deviceIdentifier) == null) {
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
-            devices.remove(deviceIdentifier);
-        }
+      DeviceDiscovery deviceDiscovery = getDeviceDiscovery(getEntityManager(request), accountId, deviceIdentifier);
 
-        return Response.ok().build();
+      if (deviceDiscovery == null) {
+        return Response.status(Response.Status.NOT_FOUND).build();
+      }
+
+      getEntityManager(request).remove(deviceDiscovery);
+      return Response.ok().build();
     }
 
+    private EntityManager getEntityManager(HttpServletRequest request)
+    {
+        return (EntityManager)request.getAttribute(EntityTransactionFilter.PERSISTENCE_ENTITY_MANAGER_LOOKUP);
+    }
+
+  private String getAccountId(String userName)
+  {
+    // TODO: replace with lookup in the database / call to appropriate service
+    return "1";
+  }
+
+  private Set<DeviceDiscovery> getDeviceDiscoveryList(EntityManager entityManager, String accountId)
+  {
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<PersistentDeviceDiscovery> deviceDiscoveryQuery = criteriaBuilder.createQuery(PersistentDeviceDiscovery.class);
+    Root<PersistentDeviceDiscovery> deviceDiscoveryRoot = deviceDiscoveryQuery.from(PersistentDeviceDiscovery.class);
+    deviceDiscoveryQuery.select(deviceDiscoveryRoot);
+    deviceDiscoveryQuery.where(criteriaBuilder.equal(deviceDiscoveryRoot.get("accountId"), accountId));
+    List<PersistentDeviceDiscovery> deviceDiscoveryList = entityManager.createQuery(deviceDiscoveryQuery).getResultList();
+
+    return new HashSet<DeviceDiscovery>(deviceDiscoveryList);
+  }
+
+  private DeviceDiscovery getDeviceDiscovery(EntityManager entityManager, String accountId, String deviceIdentifier)
+  {
+    System.out.println("accountId " + accountId);
+    System.out.println("deviceIdentifier " + deviceIdentifier);
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<PersistentDeviceDiscovery> deviceDiscoveryQuery = criteriaBuilder.createQuery(PersistentDeviceDiscovery.class);
+    Root<PersistentDeviceDiscovery> deviceDiscoveryRoot = deviceDiscoveryQuery.from(PersistentDeviceDiscovery.class);
+    deviceDiscoveryQuery.select(deviceDiscoveryRoot);
+    deviceDiscoveryQuery.where(
+            criteriaBuilder.and(
+                    criteriaBuilder.equal(deviceDiscoveryRoot.get("accountId"), accountId),
+                    criteriaBuilder.equal(deviceDiscoveryRoot.get("deviceIdentifier"), deviceIdentifier)));
+
+    try
+    {
+      return entityManager.createQuery(deviceDiscoveryQuery).getSingleResult();
+    } catch (NoResultException e) {
+      return null;
+    }
+  }
 }
