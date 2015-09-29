@@ -57,91 +57,91 @@ import java.util.Set;
 @Path("/")
 public class DeviceDiscoveryService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DeviceDiscoveryService.class);
+  private static final Logger LOG = LoggerFactory.getLogger(DeviceDiscoveryService.class);
 
-    public static final String DEVICE_DISCOVERY_LIST_JSON_HTTP_CONTENT_TYPE = "application/vnd.openremote.device-discovery-list+json";
+  public static final String DEVICE_DISCOVERY_LIST_JSON_HTTP_CONTENT_TYPE = "application/vnd.openremote.device-discovery-list+json";
 
-    @Context
-    private SecurityContext security;
+  @Context
+  private SecurityContext security;
 
-    @Context
-    private ServletContext webapp;
+  @Context
+  private ServletContext webapp;
 
-    @GET
-    @Produces(DEVICE_DISCOVERY_LIST_JSON_HTTP_CONTENT_TYPE)
-    public Response list(@Context HttpServletRequest request) {
-        LOG.info("### List discovery information...");
+  @GET
+  @Produces(DEVICE_DISCOVERY_LIST_JSON_HTTP_CONTENT_TYPE)
+  public Response list(@Context HttpServletRequest request) {
+    LOG.info("### List discovery information...");
 
-        // We explicitly forbid access by users with service-admin role (even if user has account-owner role)
-        if (security.isUserInRole("service-admin")) {
-            return Response.status(Response.Status.FORBIDDEN).build();
-        }
-
-      EntityManager entityManager = getEntityManager(request);
-
-        String accountId = getAccountId(entityManager, security.getUserPrincipal().getName());
-
-        Set<DeviceDiscovery> devices = getDeviceDiscoveryList(entityManager, accountId);
-
-        if (devices != null) {
-            return Response.ok(DeviceDiscovery.toJSONString(devices)).build();
-        } else {
-            return Response.ok(DeviceDiscovery.toJSONString(new HashSet<DeviceDiscovery>())).build();
-        }
+    // We explicitly forbid access by users with service-admin role (even if user has account-owner role)
+    if (security.isUserInRole("service-admin")) {
+      return Response.status(Response.Status.FORBIDDEN).build();
     }
 
-    @Path("{deviceIdentifier}")
-    @POST
-    @Consumes(DeviceDiscoveryReader.JSON_HTTP_CONTENT_TYPE)
-    public Response create(@Context HttpServletRequest request, DeviceDiscovery discovery, @PathParam("deviceIdentifier") String deviceIdentifier) {
-        LOG.info("### Process and persist discovery...");
+    EntityManager entityManager = getEntityManager(request);
 
-        // We explicitly forbid access by users with service-admin role (even if user has account-owner role)
-        if (security.isUserInRole("service-admin")) {
-            return Response.status(Response.Status.FORBIDDEN).build();
-        }
+    String accountId = getAccountId(entityManager, security.getUserPrincipal().getName());
 
-        LOG.info("### " + discovery.toJSONString());
+    Set<DeviceDiscovery> devices = getDeviceDiscoveryList(entityManager, accountId);
 
-      EntityManager entityManager = getEntityManager(request);
-      String accountId = getAccountId(entityManager, security.getUserPrincipal().getName());
+    if (devices != null) {
+      return Response.ok(DeviceDiscovery.toJSONString(devices)).build();
+    } else {
+      return Response.ok(DeviceDiscovery.toJSONString(new HashSet<DeviceDiscovery>())).build();
+    }
+  }
 
-      DeviceDiscovery deviceDiscovery = getDeviceDiscovery(entityManager, accountId, deviceIdentifier);
+  @Path("{deviceIdentifier}")
+  @POST
+  @Consumes(DeviceDiscoveryReader.JSON_HTTP_CONTENT_TYPE)
+  public Response create(@Context HttpServletRequest request, DeviceDiscovery discovery, @PathParam("deviceIdentifier") String deviceIdentifier) {
+    LOG.info("### Process and persist discovery...");
 
-      if (deviceDiscovery != null) {
-        return Response.status(Response.Status.CONFLICT).build();
-      }
-
-      PersistentDeviceDiscovery persistentDeviceDiscovery = new PersistentDeviceDiscovery(discovery);
-      persistentDeviceDiscovery.setAccountId(accountId);
-      getEntityManager(request).persist(persistentDeviceDiscovery);
-
-      return Response.noContent().build();
+    // We explicitly forbid access by users with service-admin role (even if user has account-owner role)
+    if (security.isUserInRole("service-admin")) {
+      return Response.status(Response.Status.FORBIDDEN).build();
     }
 
-    @Path("{deviceIdentifier}")
-    @DELETE
-    public Response delete(@Context HttpServletRequest request, @PathParam("deviceIdentifier") String deviceIdentifier) {
-        LOG.info("### Delete device discovery...");
+    LOG.info("### " + discovery.toJSONString());
 
-        // We explicitly forbid access by users with service-admin role (even if user has account-owner role)
-        if (security.isUserInRole("service-admin")) {
-            return Response.status(Response.Status.FORBIDDEN).build();
-        }
+    EntityManager entityManager = getEntityManager(request);
+    String accountId = getAccountId(entityManager, security.getUserPrincipal().getName());
 
-      EntityManager entityManager = getEntityManager(request);
+    DeviceDiscovery deviceDiscovery = getDeviceDiscovery(entityManager, accountId, deviceIdentifier);
 
-      String accountId = getAccountId(entityManager, security.getUserPrincipal().getName());
-
-      DeviceDiscovery deviceDiscovery = getDeviceDiscovery(entityManager, accountId, deviceIdentifier);
-
-      if (deviceDiscovery == null) {
-        return Response.status(Response.Status.NOT_FOUND).build();
-      }
-
-      getEntityManager(request).remove(deviceDiscovery);
-      return Response.ok().build();
+    if (deviceDiscovery != null) {
+      return Response.status(Response.Status.CONFLICT).build();
     }
+
+    PersistentDeviceDiscovery persistentDeviceDiscovery = new PersistentDeviceDiscovery(discovery);
+    persistentDeviceDiscovery.setAccountId(accountId);
+    getEntityManager(request).persist(persistentDeviceDiscovery);
+
+    return Response.noContent().build();
+  }
+
+  @Path("{deviceIdentifier}")
+  @DELETE
+  public Response delete(@Context HttpServletRequest request, @PathParam("deviceIdentifier") String deviceIdentifier) {
+    LOG.info("### Delete device discovery...");
+
+    // We explicitly forbid access by users with service-admin role (even if user has account-owner role)
+    if (security.isUserInRole("service-admin")) {
+      return Response.status(Response.Status.FORBIDDEN).build();
+    }
+
+    EntityManager entityManager = getEntityManager(request);
+
+    String accountId = getAccountId(entityManager, security.getUserPrincipal().getName());
+
+    DeviceDiscovery deviceDiscovery = getDeviceDiscovery(entityManager, accountId, deviceIdentifier);
+
+    if (deviceDiscovery == null) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
+
+    getEntityManager(request).remove(deviceDiscovery);
+    return Response.ok().build();
+  }
 
   private EntityManager getEntityManager(HttpServletRequest request)
   {
@@ -179,9 +179,9 @@ public class DeviceDiscoveryService {
     Root<PersistentDeviceDiscovery> deviceDiscoveryRoot = deviceDiscoveryQuery.from(PersistentDeviceDiscovery.class);
     deviceDiscoveryQuery.select(deviceDiscoveryRoot);
     deviceDiscoveryQuery.where(
-            criteriaBuilder.and(
-                    criteriaBuilder.equal(deviceDiscoveryRoot.get("accountId"), accountId),
-                    criteriaBuilder.equal(deviceDiscoveryRoot.get("deviceIdentifier"), deviceIdentifier)));
+      criteriaBuilder.and(
+        criteriaBuilder.equal(deviceDiscoveryRoot.get("accountId"), accountId),
+        criteriaBuilder.equal(deviceDiscoveryRoot.get("deviceIdentifier"), deviceIdentifier)));
 
     try
     {
