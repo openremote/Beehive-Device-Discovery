@@ -22,6 +22,7 @@ package org.openremote.beehive.discovery.model.persistence.jpa;
 
 import org.openremote.model.DeviceDiscovery;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -50,7 +51,8 @@ public class PersistentDeviceDiscovery extends DeviceDiscovery
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
 
-  // Constructors ---------------------------------------------------------------------------------
+  @Column(name="account_id")
+  private String accountId;
 
   /**
    * Private constructor required by the ORM framework. Creates an instance in an uninitialized
@@ -71,7 +73,15 @@ public class PersistentDeviceDiscovery extends DeviceDiscovery
     super(copy);
   }
 
-  // Object Overrides -----------------------------------------------------------------------------
+  public String getAccountId()
+  {
+    return accountId;
+  }
+
+  public void setAccountId(String accountId)
+  {
+    this.accountId = accountId;
+  }
 
   @Override public String toString()
   {
