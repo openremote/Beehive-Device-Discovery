@@ -101,6 +101,11 @@ public class DeviceDiscoveryService {
       return Response.status(Response.Status.FORBIDDEN).build();
     }
 
+    if (!deviceIdentifier.equals(discovery.getDeviceIdentifier())) {
+      // TODO: returned meaningful error message
+      return Response.status(Response.Status.BAD_REQUEST).build();
+    }
+
     LOG.info("### " + discovery.toJSONString());
 
     EntityManager entityManager = getEntityManager(request);
