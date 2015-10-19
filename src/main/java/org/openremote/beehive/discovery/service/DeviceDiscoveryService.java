@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -85,7 +86,14 @@ public class DeviceDiscoveryService {
 
     EntityManager entityManager = getEntityManager(request);
 
-    String accountId = getAccountId(entityManager, security.getUserPrincipal().getName());
+    String accountId = null;
+    try {
+      getAccountId(entityManager, security.getUserPrincipal().getName());
+    } catch (NoResultException e) {
+      Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+    } catch (NonUniqueResultException e) {
+      Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+    }
 
     Set<DeviceDiscovery> devices = getDeviceDiscoveryList(entityManager, accountId);
 
@@ -117,7 +125,15 @@ public class DeviceDiscoveryService {
     String username = security.getUserPrincipal().getName();
 
     EntityManager entityManager = getEntityManager(request);
-    String accountId = getAccountId(entityManager, username);
+
+    String accountId = null;
+    try {
+      getAccountId(entityManager, security.getUserPrincipal().getName());
+    } catch (NoResultException e) {
+      Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+    } catch (NonUniqueResultException e) {
+      Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+    }
 
     DeviceDiscovery deviceDiscovery = getDeviceDiscovery(entityManager, accountId, deviceIdentifier);
 
@@ -148,7 +164,14 @@ public class DeviceDiscoveryService {
 
     String username = security.getUserPrincipal().getName();
 
-    String accountId = getAccountId(entityManager, username);
+    String accountId = null;
+    try {
+      getAccountId(entityManager, security.getUserPrincipal().getName());
+    } catch (NoResultException e) {
+      Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+    } catch (NonUniqueResultException e) {
+      Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+    }
 
     DeviceDiscovery deviceDiscovery = getDeviceDiscovery(entityManager, accountId, deviceIdentifier);
 
