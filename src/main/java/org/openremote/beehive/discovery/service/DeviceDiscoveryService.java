@@ -90,9 +90,9 @@ public class DeviceDiscoveryService {
     try {
       getAccountId(entityManager, security.getUserPrincipal().getName());
     } catch (NoResultException e) {
-      Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     } catch (NonUniqueResultException e) {
-      Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
 
     Set<DeviceDiscovery> devices = getDeviceDiscoveryList(entityManager, accountId);
@@ -130,9 +130,9 @@ public class DeviceDiscoveryService {
     try {
       getAccountId(entityManager, security.getUserPrincipal().getName());
     } catch (NoResultException e) {
-      Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     } catch (NonUniqueResultException e) {
-      Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
 
     DeviceDiscovery deviceDiscovery = getDeviceDiscovery(entityManager, accountId, deviceIdentifier);
@@ -168,9 +168,9 @@ public class DeviceDiscoveryService {
     try {
       getAccountId(entityManager, security.getUserPrincipal().getName());
     } catch (NoResultException e) {
-      Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     } catch (NonUniqueResultException e) {
-      Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
 
     DeviceDiscovery deviceDiscovery = getDeviceDiscovery(entityManager, accountId, deviceIdentifier);
