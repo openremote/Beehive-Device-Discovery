@@ -42,9 +42,15 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import java.awt.*;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -108,8 +114,10 @@ public class DeviceDiscoveryService {
 
     LOG.info("### " + discovery.toJSONString());
 
+    String username = security.getUserPrincipal().getName();
+
     EntityManager entityManager = getEntityManager(request);
-    String accountId = getAccountId(entityManager, security.getUserPrincipal().getName());
+    String accountId = getAccountId(entityManager, username);
 
     DeviceDiscovery deviceDiscovery = getDeviceDiscovery(entityManager, accountId, deviceIdentifier);
 
@@ -120,6 +128,8 @@ public class DeviceDiscoveryService {
     PersistentDeviceDiscovery persistentDeviceDiscovery = new PersistentDeviceDiscovery(discovery);
     persistentDeviceDiscovery.setAccountId(accountId);
     getEntityManager(request).persist(persistentDeviceDiscovery);
+
+    notifyChanges(username);
 
     return Response.noContent().build();
   }
@@ -136,7 +146,9 @@ public class DeviceDiscoveryService {
 
     EntityManager entityManager = getEntityManager(request);
 
-    String accountId = getAccountId(entityManager, security.getUserPrincipal().getName());
+    String username = security.getUserPrincipal().getName();
+
+    String accountId = getAccountId(entityManager, username);
 
     DeviceDiscovery deviceDiscovery = getDeviceDiscovery(entityManager, accountId, deviceIdentifier);
 
@@ -145,6 +157,9 @@ public class DeviceDiscoveryService {
     }
 
     getEntityManager(request).remove(deviceDiscovery);
+
+    notifyChanges(username);
+
     return Response.ok().build();
   }
 
@@ -193,6 +208,21 @@ public class DeviceDiscoveryService {
       return entityManager.createQuery(deviceDiscoveryQuery).getSingleResult();
     } catch (NoResultException e) {
       return null;
+    }
+  }
+
+  private void notifyChanges(String username)
+  {
+    String notificationURI = webapp.getInitParameter("org.openremote.beehive.discovery.notificationURI");
+
+    if (notificationURI != null && !"".equals(notificationURI.trim())) {
+      try {
+        Client client = ClientBuilder.newClient();
+        Invocation.Builder invocationBuilder = client.target(notificationURI).request();
+        invocationBuilder.post(Entity.entity("{\"username\" : \"" + username + "\"}", MediaType.APPLICATION_JSON));
+      } catch (Exception e) {
+        LOG.warn("Could not post notification", e);
+      }
     }
   }
 }

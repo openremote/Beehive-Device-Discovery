@@ -6,12 +6,29 @@
     <display-name>Beehive Device Discovery REST API</display-name>
 
     <!--
-=================================================================================================
+    =================================================================================================
 
-  Servlet filters for request pre-processing and response post-processing
+      Global configuration parameters for Beehive Device Discovery
 
-=================================================================================================
--->
+    =================================================================================================
+    -->
+
+    <!--
+     | URI where a notification is posted when state of device discovery knowledge changes.
+     | If omitted, no notification is posted.
+     +-->
+    <context-param>
+        <param-name>org.openremote.beehive.discovery.notificationURI</param-name>
+        <param-value>http://localhost:8080</param-value>
+    </context-param>
+
+    <!--
+    =================================================================================================
+
+      Servlet filters for request pre-processing and response post-processing
+
+    =================================================================================================
+    -->
 
     <filter>
         <description>
@@ -47,7 +64,7 @@
          +-->
         <init-param>
             <param-name>javax.persistence.jdbc.url</param-name>
-            <param-value>jdbc:mysql://localhost:3306/beehive2?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8</param-value>
+            <param-value>jdbc:mysql://localhost:3306/beehive3?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8</param-value>
         </init-param>
 
         <!--
@@ -57,7 +74,7 @@
          +-->
         <init-param>
             <param-name>javax.persistence.jdbc.user</param-name>
-            <param-value>beehive2</param-value>
+            <param-value>beehive3</param-value>
         </init-param>
         <init-param>
             <param-name>javax.persistence.jdbc.password</param-name>
