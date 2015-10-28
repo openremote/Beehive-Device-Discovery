@@ -1,0 +1,16 @@
+{
+  "libraryName": "OpenRemote Object Model",
+  "javaFullClassName": "org.openremote.model.DeviceDiscovery",
+  "schemaVersion": "2.0.0",
+  "apiVersion": "0.2",
+  "model": {
+    "deviceIdentifier": "device_1",
+    "deviceName": "DeviceName",
+    "deviceProtocol": "DeviceProtocol",
+    "deviceModel": "Model",
+    "deviceType": "Type",
+    "deviceAttributes": {
+      "Attr1": "AttrValue1"
+    }
+  }
+}
