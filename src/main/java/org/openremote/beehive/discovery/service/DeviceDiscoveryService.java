@@ -88,7 +88,7 @@ public class DeviceDiscoveryService {
 
     String accountId = null;
     try {
-      getAccountId(entityManager, security.getUserPrincipal().getName());
+      accountId = getAccountId(entityManager, security.getUserPrincipal().getName());
     } catch (NoResultException e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     } catch (NonUniqueResultException e) {
@@ -166,7 +166,7 @@ public class DeviceDiscoveryService {
 
     String accountId = null;
     try {
-      getAccountId(entityManager, security.getUserPrincipal().getName());
+      accountId = getAccountId(entityManager, security.getUserPrincipal().getName());
     } catch (NoResultException e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     } catch (NonUniqueResultException e) {
