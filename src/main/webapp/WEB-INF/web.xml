@@ -29,27 +29,27 @@
     <!--
     =================================================================================================
 
-      Global configuration parameters for Beehive Device Discovery
-
-    =================================================================================================
-    -->
-
-    <!--
-     | URI where a notification is posted when state of device discovery knowledge changes.
-     | If omitted, no notification is posted.
-     +-->
-    <context-param>
-        <param-name>org.openremote.beehive.discovery.notificationURI</param-name>
-        <param-value>http://localhost:8080</param-value>
-    </context-param>
-
-    <!--
-    =================================================================================================
-
       Servlet filters for request pre-processing and response post-processing
 
     =================================================================================================
     -->
+
+    <filter>
+        <description>
+            Filter to send a notification whenever the state of device discovery knowledge changes.
+        </description>
+        <filter-name>NotificationFilter</filter-name>
+        <filter-class>org.openremote.beehive.discovery.NotificationFilter</filter-class>
+
+        <!--
+         | URI where a notification is posted when state of device discovery knowledge changes.
+         | If omitted, no notification is posted.
+         +-->
+        <init-param>
+            <param-name>org.openremote.beehive.discovery.notificationURI</param-name>
+            <param-value></param-value>
+        </init-param>
+    </filter>
 
     <filter>
         <description>
@@ -130,6 +130,20 @@
         </init-param>
 
     </filter>
+
+    <!--
+     | Apply notification filter to application servlet.
+     | !!! This mapping must be defined before the transaction management servlet
+     | as transaction must be committed before notification is sent.
+     +-->
+    <filter-mapping>
+        <filter-name>NotificationFilter</filter-name>
+        <servlet-name>Jersey Servlet Container for Beehive Device Discovery</servlet-name>
+
+        <!-- Apply filter for requests originating from the client only -->
+        <dispatcher>REQUEST</dispatcher>
+
+    </filter-mapping>
 
     <!--
      | Apply transaction management to application servlet.

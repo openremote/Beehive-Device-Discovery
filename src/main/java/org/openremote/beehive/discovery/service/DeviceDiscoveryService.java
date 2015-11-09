@@ -21,6 +21,7 @@
 package org.openremote.beehive.discovery.service;
 
 import org.openremote.beehive.EntityTransactionFilter;
+import org.openremote.beehive.discovery.NotificationFilter;
 import org.openremote.beehive.discovery.model.persistence.jpa.MinimalPersistentUser;
 import org.openremote.beehive.discovery.model.persistence.jpa.PersistentDeviceDiscovery;
 import org.openremote.beehive.discovery.model.rest.DeviceDiscoveryReader;
@@ -36,6 +37,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -145,7 +147,7 @@ public class DeviceDiscoveryService {
     persistentDeviceDiscovery.setAccountId(accountId);
     getEntityManager(request).persist(persistentDeviceDiscovery);
 
-    notifyChanges(username);
+    notifyChanges(request, username);
 
     return Response.noContent().build();
   }
@@ -181,7 +183,7 @@ public class DeviceDiscoveryService {
 
     getEntityManager(request).remove(deviceDiscovery);
 
-    notifyChanges(username);
+    notifyChanges(request, username);
 
     return Response.ok().build();
   }
@@ -234,18 +236,9 @@ public class DeviceDiscoveryService {
     }
   }
 
-  private void notifyChanges(String username)
+  private void notifyChanges(HttpServletRequest request, String username)
   {
-    String notificationURI = webapp.getInitParameter("org.openremote.beehive.discovery.notificationURI");
-
-    if (notificationURI != null && !"".equals(notificationURI.trim())) {
-      try {
-        Client client = ClientBuilder.newClient();
-        Invocation.Builder invocationBuilder = client.target(notificationURI).request();
-        invocationBuilder.post(Entity.entity("{\"username\" : \"" + username + "\"}", MediaType.APPLICATION_JSON));
-      } catch (Exception e) {
-        LOG.warn("Could not post notification", e);
-      }
-    }
+    // Set information to be picked up by notification filter
+    request.setAttribute(NotificationFilter.NOTIFICATION_USER_NAME, username);
   }
 }
