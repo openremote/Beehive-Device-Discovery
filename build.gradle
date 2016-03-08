@@ -15,7 +15,7 @@ repositories {
 }
 
 dependencies {
-    compile "org.openremote:or-object-model:0.2.0"
+    compile "org.openremote:or-object-model:0.2.1"
 
     compile "net.sf.flexjson:flexjson:$flexjsonVersion"
     compile "org.slf4j:slf4j-api:$slf4jVersion"
