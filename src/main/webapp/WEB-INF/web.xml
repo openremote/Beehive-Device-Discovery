@@ -85,7 +85,7 @@
          +-->
         <init-param>
             <param-name>javax.persistence.jdbc.url</param-name>
-            <param-value>jdbc:mysql://localhost:3306/beehive3?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8</param-value>
+            <param-value>jdbc:mysql://localhost:3306/beehive?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8</param-value>
         </init-param>
 
         <!--
@@ -95,7 +95,7 @@
          +-->
         <init-param>
             <param-name>javax.persistence.jdbc.user</param-name>
-            <param-value>beehive3</param-value>
+            <param-value>beehive</param-value>
         </init-param>
         <init-param>
             <param-name>javax.persistence.jdbc.password</param-name>
