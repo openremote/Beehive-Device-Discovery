@@ -15,11 +15,7 @@ repositories {
 }
 
 dependencies {
-<<<<<<< HEAD
     compile "org.openremote:or-object-model:0.2.1"
-=======
-    compile "org.openremote:or-object-model:0.2.0"
->>>>>>> e7b75d2604077b0713ab376e64f2c51dd6ea92ec
 
     compile "net.sf.flexjson:flexjson:$flexjsonVersion"
     compile "org.slf4j:slf4j-api:$slf4jVersion"
