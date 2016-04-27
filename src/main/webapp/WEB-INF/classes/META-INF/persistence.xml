@@ -48,11 +48,20 @@
       <property name = "javax.persistence.jdbc.driver" value = "com.mysql.jdbc.Driver"/>
       <property name = "javax.persistence.jdbc.url" value = "jdbc:mysql://localhost:3306/beehive?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
 
-      <property name = "hibernate.connection.pool_size" value = "10"/>
       <property name = "hibernate.cache.provider_class" value = "org.hibernate.cache.internal.NoCacheProvider"/>
       <property name = "hibernate.dialect" value = "org.hibernate.dialect.MySQLDialect"/>
       <property name = "hibernate.hbm2ddl.auto" value = "validate"/>
       <property name = "hibernate.current_session_context_class" value = "managed"/>
+
+      <property name = "hibernate.connection.provider_class" value="org.hibernate.connection.C3P0ConnectionProvider"/>
+      <property name = "hibernate.c3p0.min_size" value = "5"/>
+      <property name = "hibernate.c3p0.max_size" value = "20"/>
+      <property name = "hibernate.c3p0.acquire_increment" value = "5"/>
+      <property name = "hibernate.c3p0.max_statements" value = "50"/>
+      <property name = "hibernate.c3p0.timeout" value = "1800"/>
+      <property name = "hibernate.c3p0.idle_test_period" value = "10"/>
+      <property name = "hibernate.c3p0.testConnectionOnCheckin" value = "true"/>
+      <property name = "hibernate.c3p0.preferredTestQuery" value="SELECT 1"/>
     </properties>
 
   </persistence-unit>

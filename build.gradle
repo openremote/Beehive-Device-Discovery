@@ -27,6 +27,8 @@ dependencies {
     compile "org.hibernate:hibernate-core:$hibernateVersion"
     compile "org.hibernate:hibernate-entitymanager:$hibernateVersion"
 
+    compile "com.mchange:c3p0:$c3p0Version"
+
     compile "ch.qos.logback:logback-classic:$logbackVersion"
 
     providedCompile "javax.servlet:javax.servlet-api:$servletVersion"
