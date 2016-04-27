@@ -53,7 +53,7 @@
       <property name = "hibernate.hbm2ddl.auto" value = "validate"/>
       <property name = "hibernate.current_session_context_class" value = "managed"/>
 
-      <property name = "hibernate.connection.provider_class" value="org.hibernate.connection.C3P0ConnectionProvider"/>
+      <property name = "hibernate.connection.provider_class" value="org.hibernate.c3p0.internal.C3P0ConnectionProvider"/>
       <property name = "hibernate.c3p0.min_size" value = "5"/>
       <property name = "hibernate.c3p0.max_size" value = "20"/>
       <property name = "hibernate.c3p0.acquire_increment" value = "5"/>
