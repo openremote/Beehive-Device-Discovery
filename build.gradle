@@ -26,8 +26,7 @@ dependencies {
 
     compile "org.hibernate:hibernate-core:$hibernateVersion"
     compile "org.hibernate:hibernate-entitymanager:$hibernateVersion"
-
-    compile "com.mchange:c3p0:$c3p0Version"
+    compile "org.hibernate:hibernate-c3p0:$hibernateVersion"
 
     compile "ch.qos.logback:logback-classic:$logbackVersion"
 
