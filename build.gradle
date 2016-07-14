@@ -5,6 +5,17 @@ apply plugin: "war"
 sourceCompatibility = 1.7
 version = projectVersion
 
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.bmuschko:gradle-docker-plugin:3.0.1'
+    }
+}
+
 repositories {
     jcenter();
     mavenCentral()
@@ -32,4 +43,26 @@ dependencies {
 
     providedCompile "javax.servlet:javax.servlet-api:$servletVersion"
 
+}
+
+apply plugin: "com.bmuschko.docker-remote-api"
+
+docker {
+    url = "$System.env.DOCKER_HOST".replace("tcp:", "https:")
+    certPath = new File("$System.env.DOCKER_CERT_PATH")
+}
+
+
+import com.bmuschko.gradle.docker.tasks.image.*
+
+task createDockerFile(type:Dockerfile, dependsOn: build) {
+    destFile = project.file("$project.buildDir/install/Dockerfile")
+    from "openremote/tomcat-base"
+    addFile projectDir.toPath().relativize(war.archivePath.toPath()).toString(), "webapps/"
+}
+
+task buildImage(type: DockerBuildImage, dependsOn: createDockerFile) {
+    inputDir = projectDir
+    dockerFile = createDockerFile.destFile
+    tag = 'openremote/beehive-device-discovery'
 }
